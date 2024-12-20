@@ -1,6 +1,8 @@
 #include <iostream>
+#include <tests/tests.h>
 
 int main() {
-    std::cout << "Start Chess Bot\n";
+    std::cout << "Chess Bot\n";
+    test_steps_on_empty_board();
     return 0;
 }
