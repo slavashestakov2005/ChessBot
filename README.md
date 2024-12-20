@@ -31,3 +31,7 @@
 + [Habr - несложные шахматы](https://habr.com/ru/companies/skillbox/articles/437524/);
 + [Habr - разработка шахматной программы](https://habr.com/ru/articles/329528/);
 + [Habr - шахматы на C++](https://habr.com/ru/articles/682122/);
++ [Habr - алгоритм minimax в шахматах](https://habr.com/ru/companies/otus/articles/785512/);
++ [Habr - определяем веса шахматных фигур](https://habr.com/ru/articles/254753/);
++ [Habr - как компьютер играет в шахматы](https://habr.com/ru/articles/390821/);
++ [Таблица оценок позиций](https://www.chessprogramming.org/Simplified_Evaluation_Function);

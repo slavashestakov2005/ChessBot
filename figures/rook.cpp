@@ -2,6 +2,15 @@
 #include <figures/macro.h>
 
 char Rook::latter = 'r';
+int Rook::cost = 50;
+int Rook::cost_table[8][8] = {{  0,  0,  0,  0,  0,  0,  0,  0},
+                              {  5, 10, 10, 10, 10, 10, 10,  5},
+                              { -5,  0,  0,  0,  0,  0,  0, -5},
+                              { -5,  0,  0,  0,  0,  0,  0, -5},
+                              { -5,  0,  0,  0,  0,  0,  0, -5},
+                              { -5,  0,  0,  0,  0,  0,  0, -5},
+                              { -5,  0,  0,  0,  0,  0,  0, -5},
+                              {  0,  0,  0,  5,  5,  0,  0,  0}};
 
 std::vector<Pos> Rook::moves(Board const& board, Pos pos, Color color) {
     std::vector<Pos> to;

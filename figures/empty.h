@@ -1,7 +1,7 @@
 #pragma once
 #include <figures/figure.h>
 
-class Bishop : public Figure<Bishop> {
+class Empty : public Figure<Empty> {
 public:
     static char latter;
     static int cost;

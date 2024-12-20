@@ -2,6 +2,15 @@
 #include <figures/macro.h>
 
 char Queen::latter = 'q';
+int Queen::cost = 90;
+int Queen::cost_table[8][8] = {{-20,-10,-10, -5, -5,-10,-10,-20},
+                               {-10,  0,  0,  0,  0,  0,  0,-10},
+                               {-10,  0,  5,  5,  5,  5,  0,-10},
+                               { -5,  0,  5,  5,  5,  5,  0, -5},
+                               {  0,  0,  5,  5,  5,  5,  0, -5},
+                               {-10,  5,  5,  5,  5,  5,  0,-10},
+                               {-10,  0,  5,  0,  0,  0,  0,-10},
+                               {-20,-10,-10, -5, -5,-10,-10,-20}};
 
 std::vector<Pos> Queen::moves(Board const& board, Pos pos, Color color) {
     std::vector<Pos> to;
