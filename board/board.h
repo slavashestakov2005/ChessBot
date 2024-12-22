@@ -8,6 +8,7 @@ public:
     void defaultPlacement();
     Color getColor(int x, int y) const;
     FigureType getType(int x, int y) const;
+    void setType(Pos pos, FigureType type);
     void print() const;
 private:
     FigureType board[8][8];

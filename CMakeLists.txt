@@ -9,10 +9,12 @@ include_directories(.)
 set(SOURCE_BOARD
     board/board.cpp
     board/figure_type.cpp
+    board/pos.cpp
 )
 
 set(SOURCE_BOT
     bot/analyzer.cpp
+    bot/stepper.cpp
 )
 
 set(SOURCE_FIGURES

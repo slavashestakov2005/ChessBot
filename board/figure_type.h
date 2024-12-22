@@ -1,6 +1,7 @@
 #pragma once
 #include <board/pos.h>
 #include <cstdint>
+#include <vector>
 
 enum class FigureType : uint8_t {
     EMPTY,
@@ -33,3 +34,7 @@ char getChar(FigureType type);
 int getMaterial(FigureType type);
 
 int getMaterial(FigureType type, Pos pos);
+
+class Board;
+
+std::vector<Pos> getSteps(Board const& board, Pos pos);

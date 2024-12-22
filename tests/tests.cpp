@@ -2,6 +2,7 @@
 #include <board/board.h>
 #include <figures/all.h>
 #include <bot/analyzer.h>
+#include <bot/stepper.h>
 
 void test_steps_on_empty_board() {
     Board board;
@@ -25,4 +26,13 @@ void test_default_placement() {
     board.print();
     std::cout << "Material Simple:   " << Analyzer::analyzeMaterial(board) << "\n";
     std::cout << "Material Position: " << Analyzer::analyzeMaterialPosition(board) << "\n";
+}
+
+void test_stepper() {
+    Board board;
+    board.defaultPlacement();
+    board.print();
+    Stepper stepper;
+    Step step = stepper.run(board, 0);
+    std::cout << "Best step is:  " << step.from << " -> " << step.to << "\n";
 }

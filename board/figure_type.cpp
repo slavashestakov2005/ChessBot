@@ -31,3 +31,9 @@ int getMaterial(FigureType type, Pos pos) {
     int id = static_cast<uint8_t>(type);
     return figures_classes[id]->materialPlace(pos, figures_color[id]);
 }
+
+std::vector<Pos> getSteps(Board const& board, Pos pos) {
+    FigureType type = board.getType(pos.x, pos.y);
+    int id = static_cast<uint8_t>(type);
+    return figures_classes[id]->step(board, pos, figures_color[id]);
+}

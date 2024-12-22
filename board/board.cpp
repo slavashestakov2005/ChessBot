@@ -32,6 +32,10 @@ FigureType Board::getType(int x, int y) const {
     return board[y][x];
 }
 
+void Board::setType(Pos pos, FigureType type) {
+    board[pos.y][pos.x] = type;
+}
+
 void Board::print() const {
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {

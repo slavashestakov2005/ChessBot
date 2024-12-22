@@ -4,6 +4,7 @@
 int main() {
     std::cout << "Chess Bot\n";
     // test_steps_on_empty_board();
-    test_default_placement();
+    // test_default_placement();
+    test_stepper();
     return 0;
 }

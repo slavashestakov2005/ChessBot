@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <ostream>
 
 enum class Color : uint8_t {
     WHITE,
@@ -12,3 +13,5 @@ class Pos {
 public:
     int x, y;
 };
+
+std::ostream& operator<<(std::ostream& os, Pos const& pos);
