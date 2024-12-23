@@ -1,0 +1,23 @@
+namespace HashConstants {
+    constexpr uint64_t SEED = 0x98f107;
+    constexpr uint64_t MULTIPLIER = 0x71abc9;
+    constexpr uint64_t SUMMAND = 0xff1b3f;
+}
+
+consteval uint64_t HashConstants::nextRandomNumber(uint64_t previous) {
+    return HashConstants::MULTIPLIER * previous + HashConstants::SUMMAND;
+}
+
+consteval std::array<std::array<std::array<uint64_t, 6>, 2>, 64> HashConstants::calcConstants() {
+    std::array<std::array<std::array<uint64_t, 6>, 2>, 64> constants;
+    uint64_t previous = HashConstants::SEED;
+    for (uint8_t square = 0; square < 64; square = square + 1) {
+        for (uint8_t side = 0; side < 2; side = side + 1) {
+            for (uint8_t type = 0; type < 6; type = type + 1) {
+                previous = HashConstants::nextRandomNumber(previous);
+                constants[square][side][type] = previous;
+            }
+        }
+    }
+    return constants;
+}

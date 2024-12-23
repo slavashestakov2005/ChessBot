@@ -96,7 +96,8 @@
 		"variant": "cpp",
 		"*.tpp": "c",
 		"rope": "cpp",
-		"slist": "cpp"
+		"slist": "cpp",
+		"*.impl": "cpp"
 	},
 	"C_Cpp.errorSquiggles": "disabled"
 }

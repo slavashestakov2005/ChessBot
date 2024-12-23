@@ -7,6 +7,11 @@ project(ChessBot)
 include_directories(.)
 
 set(SOURCE_BOARD
+    board/bitboard.cpp
+    board/board.cpp
+    board/hash.cpp
+    board/move.cpp
+    board/position.cpp
 )
 
 set(SOURCE_BOT

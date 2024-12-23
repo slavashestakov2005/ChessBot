@@ -1,0 +1,83 @@
+#include <bit>
+
+constexpr BitBoard::BitBoard() : board(0) {}
+
+constexpr BitBoard::BitBoard(uint64_t board) : board(board) {}
+
+constexpr uint64_t BitBoard::getAll() const {
+    return board;
+}
+
+constexpr uint8_t BitBoard::ones() const {
+    return std::popcount(board);
+}
+
+constexpr BitBoard BitBoard::inv() const {
+    return ~board;
+}
+
+constexpr BitBoard BitBoard::set0(uint8_t place) const {
+    return board & ~(1ull << place);
+}
+
+constexpr BitBoard BitBoard::set1(uint8_t place) const {
+    return board | (1ull << place);
+}
+
+constexpr bool BitBoard::getBit(uint8_t place) const {
+    return board & (1ull << place);
+}
+
+constexpr uint8_t BitBoard::getFirst1() const {
+    return 64 - __builtin_clzll(board);
+}
+
+constexpr uint8_t BitBoard::getLast1() const {
+    return __builtin_ctzll(board);
+}
+
+constexpr BitBoard operator|(BitBoard const& l, BitBoard const& r) {
+    return l.getAll() | r.getAll();
+}
+
+consteval std::array<BitBoard, 8> BitBoardConstants::evalRows() {
+    std::array<BitBoard, 8> rows;
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            rows[i] = rows[i].set1(i * 8 + j);
+        }
+    }
+    return rows;
+}
+
+consteval std::array<BitBoard, 8> BitBoardConstants::evalInvRows() {
+    std::array<BitBoard, 8> invRows;
+    for (BitBoard &bb : invRows) bb = BitBoard(~0ull);
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            invRows[i] = invRows[i].set0(i * 8 + j);
+        }
+    }
+    return invRows;
+}
+
+consteval std::array<BitBoard, 8> BitBoardConstants::evalCols() {
+    std::array<BitBoard, 8> cols;
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            cols[j] = cols[j].set1(i * 8 + j);
+        }
+    }
+    return cols;
+}
+
+consteval std::array<BitBoard, 8> BitBoardConstants::evalInvCols() {
+    std::array<BitBoard, 8> invCols;
+    for (BitBoard &bb : invCols) bb = BitBoard(~0ull);
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            invCols[j] = invCols[j].set0(i * 8 + j);
+        }
+    }
+    return invCols;
+}
