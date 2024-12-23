@@ -36,3 +36,32 @@ void test_stepper() {
     Step step = stepper.run(board, 0);
     std::cout << "Best step is:  " << step.from << " -> " << step.to << "\n";
 }
+
+void test_play_game() {
+    Board board;
+    board.defaultPlacement();
+    board.print();
+    int cnt = 0;
+    while (true) {
+        Stepper stepper;
+        Step step = stepper.run(board, cnt);
+        board = applyMove(board, step);
+        std::cout << "\n\n";
+        board.print();
+        std::cout << "From to: ";
+        char s, d;
+        Pos from, to;
+        std::cin >> s >> d;
+        if (s == 'q') break;
+        from.x = s - 'a';
+        from.y = d - '1';
+        std::cin >> s >> d;
+        to.x = s - 'a';
+        to.y = d - '1';
+        step = Step(from, to);
+        board = applyMove(board, step);
+        board.print();
+        std::cout << "\n";
+        cnt += 2;
+    }
+}

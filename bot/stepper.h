@@ -15,6 +15,8 @@ struct StepInfo {
     int cost;
 };
 
+Board applyMove(Board board, Step move);
+
 class Stepper {
 public:
     Step run(Board const& board, int step) const;

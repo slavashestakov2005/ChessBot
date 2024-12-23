@@ -17,8 +17,8 @@ public:
     constexpr static Name instance = {};
 
     constexpr char print(Color color) const override {
-        if (color == Color::WHITE) return Name::latter;
-        else return Name::latter - 'a' + 'A';
+        if (color == Color::BLACK) return Name::latter - 'a' + 'A';
+        else return Name::latter;
     }
 
     constexpr int material(Color color) const override {

@@ -1,6 +1,7 @@
 #include <bot/stepper.h>
 #include <bot/analyzer.h>
 #include <random>
+#include <iostream>
 
 const int INF = 1e9;
 
@@ -45,7 +46,7 @@ char Stepper::player(int step) const {
 
 StepInfo Stepper::stepFirst(Board const& board, int step, int max_step, int alpha, int beta) const {
     if (step == max_step) {
-        int cost = Analyzer::analyzeMaterial(board);
+        int cost = 11 * Analyzer::analyzeMaterial(board) + 2 * Analyzer::analyzeMaterialPosition(board);
         return StepInfo(cost);
     }
     char next = player(step + 1);
@@ -63,7 +64,7 @@ StepInfo Stepper::stepFirst(Board const& board, int step, int max_step, int alph
 
 StepInfo Stepper::stepSecond(Board const& board, int step, int max_step, int alpha, int beta) const {
     if (step == max_step) {
-        int cost = Analyzer::analyzeMaterialPosition(board);
+        int cost = 11 * Analyzer::analyzeMaterial(board) + 2 * Analyzer::analyzeMaterialPosition(board);
         return StepInfo(cost);
     }
     char next = player(step + 1);
