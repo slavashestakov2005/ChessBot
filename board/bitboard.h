@@ -13,8 +13,8 @@ public:
     constexpr BitBoard set0(uint8_t place) const;
     constexpr BitBoard set1(uint8_t place) const;
     constexpr bool getBit(uint8_t place) const;
-    constexpr uint8_t getFirst1() const;
-    constexpr uint8_t getLast1() const;
+    constexpr uint8_t getHigh1() const;
+    constexpr uint8_t getLow1() const;
     constexpr operator bool() const;
 private:
     uint64_t board;

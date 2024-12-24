@@ -9,9 +9,9 @@ BitBoard moveLine(Board const& board, uint8_t cell, Color color, bool attack_onl
         if (attack_only) return 0;
         return Moves::LINES[cell][(int) dir];
     }
-    uint8_t block_pos; // check !!!
-    if (first_block) block_pos = blockers.getLast1();
-    else block_pos = blockers.getFirst1();
+    uint8_t block_pos;
+    if (first_block) block_pos = blockers.getHigh1();
+    else block_pos = blockers.getLow1();
     BitBoard moves;
     if (!attack_only) moves = Moves::LINES[cell][(int) dir] ^ Moves::LINES[block_pos][(int) dir];
     if (board.getColorBitBoard(color).getBit(block_pos)) moves = moves.set0(block_pos);
@@ -19,19 +19,19 @@ BitBoard moveLine(Board const& board, uint8_t cell, Color color, bool attack_onl
     return moves;
 }
 
-BitBoard pawnDefault(Board const& board, Color color) {
+BitBoard PseudoMoves::pawnDefault(Board const& board, Color color) {
     BitBoard pawns = board.getFigureBitBoard(color, Figure::PAWN);
     if (color == Color::WHITE) return (pawns << 8) & board.getNoneBitBoard();
     else return (pawns >> 8) & board.getNoneBitBoard();
 }
 
-BitBoard pawnLong(Board const& board, Color color) {
+BitBoard PseudoMoves::pawnLong(Board const& board, Color color) {
     BitBoard pawns = pawnDefault(board, color);
     if (color == Color::WHITE) return ((pawns & BitBoardConstants::ROWS[2]) << 8) & board.getNoneBitBoard();
     else return ((pawns & BitBoardConstants::ROWS[5]) >> 8) & board.getNoneBitBoard();
 }
 
-BitBoard pawnLeft(Board const& board, Color color, bool attack_empty) {
+BitBoard PseudoMoves::pawnLeft(Board const& board, Color color, bool attack_empty) {
     BitBoard pawns = board.getFigureBitBoard(color, Figure::PAWN);
     if (color == Color::WHITE) {
         BitBoard mask = (pawns << 7) & BitBoardConstants::INV_COLS[7];
@@ -44,7 +44,7 @@ BitBoard pawnLeft(Board const& board, Color color, bool attack_empty) {
     }
 }
 
-BitBoard pawnRight(Board const& board, Color color, bool attack_empty) {
+BitBoard PseudoMoves::pawnRight(Board const& board, Color color, bool attack_empty) {
     BitBoard pawns = board.getFigureBitBoard(color, Figure::PAWN);
     if (color == Color::WHITE) {
         BitBoard mask = (pawns << 9) & BitBoardConstants::INV_COLS[0];
@@ -98,7 +98,7 @@ BitBoard PseudoMoves::movesKing(Board const& board, uint8_t cell, Color color, b
     return Moves::KING[cell] & board.getInvColorBitBoard(color);
 }
 
-bool PseudoMoves::inBitten(Board const& board, uint8_t cell, Color color) {
+bool PseudoMoves::isBitten(Board const& board, uint8_t cell, Color color) {
     Color invc = inv(color);
     BitBoard pawns = pawnLeft(board, invc, true) | pawnRight(board, invc, true);
     if (pawns.getBit(cell)) return true;

@@ -1,17 +1,24 @@
 #pragma once
+#include <array>
 
 enum class Figure {
-    PAWN = 0,
-    KNIGHT = 1,
-    BISHOP = 2,
-    ROOK = 3,
-    QUEEN = 4,
-    KING = 5
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING,
+    NONE,
 };
 
 enum class Color {
-    WHITE = 0,
-    BLACK = 1
+    WHITE,
+    BLACK,
+    NONE,
 };
 
 Color inv(Color color);
+
+constexpr std::array<Figure, 7> FIGURES = {Figure::PAWN, Figure::KNIGHT, Figure::BISHOP, Figure::ROOK,
+                                           Figure::QUEEN, Figure::KING, Figure::NONE};
+constexpr std::array<Color, 3> COLORS = {Color::WHITE, Color::BLACK, Color::NONE};

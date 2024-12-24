@@ -16,6 +16,8 @@ set(SOURCE_BOARD
 )
 
 set(SOURCE_BOT
+    bot/legal_moves.cpp
+    bot/moves.cpp
 )
 
 set(SOURCE_FIGURES

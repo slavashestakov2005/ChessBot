@@ -28,11 +28,11 @@ constexpr bool BitBoard::getBit(uint8_t place) const {
     return board & (1ull << place);
 }
 
-constexpr uint8_t BitBoard::getFirst1() const {
-    return 64 - __builtin_clzll(board);
+constexpr uint8_t BitBoard::getHigh1() const {
+    return 63 - __builtin_clzll(board);
 }
 
-constexpr uint8_t BitBoard::getLast1() const {
+constexpr uint8_t BitBoard::getLow1() const {
     return __builtin_ctzll(board);
 }
 
@@ -49,7 +49,7 @@ constexpr BitBoard operator&(BitBoard const& l, BitBoard const& r) {
 }
 
 constexpr BitBoard operator^(BitBoard const& l, BitBoard const& r) {
-    return l.getAll() & r.getAll();
+    return l.getAll() ^ r.getAll();
 }
 
 constexpr BitBoard operator<<(BitBoard const& bb, int shift) {

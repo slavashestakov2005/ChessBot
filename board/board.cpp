@@ -25,7 +25,7 @@ void Board::placement(std::string s) {
 }
 
 void Board::defaultPlacement() {
-    Board::placement("RNBQKBNRPPPPPPPP                                pppppppprnbqknbr");
+    Board::placement("RNBQKBNRPPPPPPPP                                pppppppprnbqkbnr");
 }
 
 void Board::updateBitBoards() {
