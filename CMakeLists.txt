@@ -9,6 +9,7 @@ include_directories(.)
 set(SOURCE_BOARD
     board/bitboard.cpp
     board/board.cpp
+    board/figures.cpp
     board/hash.cpp
     board/move.cpp
     board/position.cpp
@@ -18,6 +19,7 @@ set(SOURCE_BOT
 )
 
 set(SOURCE_FIGURES
+    figures/pseudo_moves.cpp
 )
 
 set(SOURCE_TEST

@@ -1,0 +1,12 @@
+consteval std::array<BitBoard, 64> Moves::evalKing() {
+    std::array<BitBoard, 64> masks;
+    for (int x1 = 0; x1 < 8; ++x1) for (int y1 = 0; y1 < 8; ++y1) {
+        for (int x2 = 0; x2 < 8; ++x2) for (int y2 = 0; y2 < 8; ++y2) {
+            int dx = x1 - x2, dy = y1 - y2;
+            if (int d = dx * dx + dy * dy; 0 < d && d <= 2) {
+                masks[y1 * 8 + x1] = masks[y1 * 8 + x1].set1(y2 * 8 + x2);
+            }
+        }
+    }
+    return masks;
+}

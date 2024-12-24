@@ -36,8 +36,28 @@ constexpr uint8_t BitBoard::getLast1() const {
     return __builtin_ctzll(board);
 }
 
+constexpr BitBoard::operator bool() const {
+    return board != 0;
+}
+
 constexpr BitBoard operator|(BitBoard const& l, BitBoard const& r) {
     return l.getAll() | r.getAll();
+}
+
+constexpr BitBoard operator&(BitBoard const& l, BitBoard const& r) {
+    return l.getAll() & r.getAll();
+}
+
+constexpr BitBoard operator^(BitBoard const& l, BitBoard const& r) {
+    return l.getAll() & r.getAll();
+}
+
+constexpr BitBoard operator<<(BitBoard const& bb, int shift) {
+    return bb.getAll() << shift;
+}
+
+constexpr BitBoard operator>>(BitBoard const& bb, int shift) {
+    return bb.getAll() >> shift;
 }
 
 consteval std::array<BitBoard, 8> BitBoardConstants::evalRows() {

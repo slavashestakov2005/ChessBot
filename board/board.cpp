@@ -28,14 +28,6 @@ void Board::defaultPlacement() {
     Board::placement("RNBQKBNRPPPPPPPP                                pppppppprnbqknbr");
 }
 
-BitBoard Board::getColorBitBoard(Color color) const {
-    return colorFigures[(int) color];
-}
-
-BitBoard Board::getFigureBitBoard(Color color, Figure figure) const {
-    return figures[(int) color][(int) figure];
-}
-
 void Board::updateBitBoards() {
     colorFigures[(int) Color::WHITE] = figures[(int) Color::WHITE][(int) Figure::PAWN] |
                                        figures[(int) Color::WHITE][(int) Figure::KNIGHT] |
@@ -52,7 +44,27 @@ void Board::updateBitBoards() {
     invColorFigures[(int) Color::WHITE] = colorFigures[(int) Color::WHITE].inv();
     invColorFigures[(int) Color::BLACK] = colorFigures[(int) Color::BLACK].inv();
     anyFigures = colorFigures[(int) Color::WHITE] | colorFigures[(int) Color::BLACK];
-    noFigures = anyFigures.inv();
+    noneFigures = anyFigures.inv();
+}
+
+BitBoard Board::getFigureBitBoard(Color color, Figure figure) const {
+    return figures[(int) color][(int) figure];
+}
+
+BitBoard Board::getColorBitBoard(Color color) const {
+    return colorFigures[(int) color];
+}
+
+BitBoard Board::getInvColorBitBoard(Color color) const {
+    return invColorFigures[(int) color];
+}
+
+BitBoard Board::getAnyBitBoard() const {
+    return anyFigures;
+}
+
+BitBoard Board::getNoneBitBoard() const {
+    return noneFigures;
 }
 
 void Board::setFigureBitBoard(Color color, Figure figure, BitBoard new_bb) {
