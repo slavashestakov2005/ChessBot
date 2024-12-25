@@ -1,13 +1,17 @@
 #pragma once
-#include <board/position.h>
+#include <board/figures.h>
+#include <cstdint>
+
+class Position;
 
 class Hash {
 public:
     Hash();
     Hash(Position const& pos);
     uint64_t getValue() const;
+    void inversePlayer();
+    void inverse(uint8_t cell, Color color, Figure figure);
 private:
-    void inverse(int pos, Color color, Figure figure);
     uint64_t value;
 };
 

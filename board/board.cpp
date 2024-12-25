@@ -86,7 +86,8 @@ std::ostream &operator<<(std::ostream &os, Board const& board) {
             else if (board.getFigureBitBoard(Color::BLACK, Figure::BISHOP).getBit(index)) os << 'b';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::ROOK).getBit(index)) os << 'r';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::QUEEN).getBit(index)) os << 'q';
-            else if (board.getFigureBitBoard(Color::BLACK, Figure::KING).getBit(index)) os << 'k';            
+            else if (board.getFigureBitBoard(Color::BLACK, Figure::KING).getBit(index)) os << 'k';
+            else os << ' ';
         }
         os << std::endl;
     }

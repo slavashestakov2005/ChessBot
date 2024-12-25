@@ -20,3 +20,11 @@ void Moves::push(Move move) {
 uint8_t Moves::size() const {
     return len;
 }
+
+Moves::iterator Moves::begin() {
+    return moves.begin();
+}
+
+Moves::iterator Moves::end() {
+    return moves.begin() + len;
+}

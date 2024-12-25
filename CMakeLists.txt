@@ -16,8 +16,12 @@ set(SOURCE_BOARD
 )
 
 set(SOURCE_BOT
+    bot/analyzer.cpp
+    bot/bot.cpp
     bot/legal_moves.cpp
+    bot/moves_sorter.cpp
     bot/moves.cpp
+    bot/visited_states.cpp
 )
 
 set(SOURCE_FIGURES

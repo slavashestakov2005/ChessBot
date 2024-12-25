@@ -13,4 +13,8 @@ public:
 private:
     std::array<Move, MAX> moves;
     uint8_t len;
+    using iterator = std::array<Move, MAX>::iterator;
+public:
+    iterator begin();
+    iterator end();
 };

@@ -1,4 +1,5 @@
 #include <board/hash.h>
+#include <board/position.h>
 
 Hash::Hash() : value(0) {}
 
@@ -25,8 +26,12 @@ uint64_t Hash::getValue() const {
     return value;
 }
 
-void Hash::inverse(int pos, Color color, Figure figure) {
-    value ^= HashConstants::CONSTANTS[pos][(int) color][(int) figure];
+void Hash::inversePlayer() {
+    value ^= HashConstants::BLACK_STEP;
+}
+
+void Hash::inverse(uint8_t cell, Color color, Figure figure) {
+    value ^= HashConstants::CONSTANTS[cell][(int) color][(int) figure];
 }
 
 bool operator==(Hash const& l, Hash const& r) {
