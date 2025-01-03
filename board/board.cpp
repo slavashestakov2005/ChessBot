@@ -67,6 +67,10 @@ BitBoard Board::getNoneBitBoard() const {
     return noneFigures;
 }
 
+std::array<std::array<BitBoard, 6>, 2> Board::getAllFigures() const {
+    return figures;
+}
+
 void Board::setFigureBitBoard(Color color, Figure figure, BitBoard new_bb) {
     figures[(int) color][(int) figure] = new_bb;
 }

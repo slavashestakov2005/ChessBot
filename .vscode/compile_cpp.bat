@@ -7,5 +7,5 @@ if not exist .build_cpp (
     cd .build_cpp
 )
 
-make bot
-start cmd /k "bot & echo. & pause & exit"
+make bot_ui
+start cmd /k "bot_ui & echo. & pause & exit"
