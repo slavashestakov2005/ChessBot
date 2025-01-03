@@ -6,6 +6,7 @@ enum class SpecialMove {
     NONE,
     EN_PASSANT,
     PAWN_LONG,
+
     PAWN_KNIGHT,
     PAWN_BISHOP,
     PAWN_ROOK,

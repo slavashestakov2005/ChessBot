@@ -29,8 +29,8 @@ private:
     void drawSelectedPieceMoves();
     void updateWindowTitle();
 
-    [[nodiscard]] sf::Vector2f getCellSize();
-    [[nodiscard]] sf::Vector2f getCellPosition(int32_t x, int32_t y);
-    [[nodiscard]] GameStatus getStatus();
-    [[nodiscard]] std::string getTextureName(int32_t x, int32_t y) const;
+    sf::Vector2f getCellSize();
+    sf::Vector2f getCellPosition(int32_t x, int32_t y);
+    GameStatus getStatus();
+    std::string getTextureName(int32_t x, int32_t y) const;
 };

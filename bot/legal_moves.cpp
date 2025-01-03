@@ -15,24 +15,27 @@ void LegalMoves::generateForFigureType(Board const& board, Color color, Figure f
 Moves LegalMoves::generate(Position const& position, Color color, bool only_attack) {
     Moves moves;
     Board board = position.getBoard();
-    generatePawnsAll(board, color, only_attack, moves);
+    generatePawnsAll(position, color, only_attack, moves);
     generateForFigureType(board, color, Figure::KNIGHT, PseudoMoves::movesKnight, only_attack, moves);
     generateForFigureType(board, color, Figure::BISHOP, PseudoMoves::movesBishop, only_attack, moves);
     generateForFigureType(board, color, Figure::ROOK, PseudoMoves::movesRook, only_attack, moves);
     generateForFigureType(board, color, Figure::QUEEN, PseudoMoves::movesQueen, only_attack, moves);
     generateForFigureType(board, color, Figure::KING, PseudoMoves::movesKing, only_attack, moves);
+    generateForFigureType(board, color, Figure::ROOK_MOVED, PseudoMoves::movesRook, only_attack, moves);
+    generateForFigureType(board, color, Figure::KING_MOVED, PseudoMoves::movesKing, only_attack, moves);
     return moves;
 }
 
-void LegalMoves::generatePawnsAll(Board const& board, Color color, bool only_attack, Moves &moves) {
+void LegalMoves::generatePawnsAll(Position const& position, Color color, bool only_attack, Moves &moves) {
+    Board const& board = position.getBoard();
     BitBoard pl = PseudoMoves::pawnLeft(board, color, false);
     BitBoard pr = PseudoMoves::pawnRight(board, color, false);
     if (color == Color::WHITE) {
         generatePawnsPart(board, pl, color, -7, true, SpecialMove::NONE, moves);
         generatePawnsPart(board, pr, color, -9, true, SpecialMove::NONE, moves);
     } else {
-        generatePawnsPart(board, pl, color, 7, true, SpecialMove::NONE, moves);
-        generatePawnsPart(board, pr, color, 9, true, SpecialMove::NONE, moves);
+        generatePawnsPart(board, pl, color, 9, true, SpecialMove::NONE, moves);
+        generatePawnsPart(board, pr, color, 7, true, SpecialMove::NONE, moves);
     }
     if (!only_attack) {
         BitBoard step_short = PseudoMoves::pawnDefault(board, color);
@@ -45,6 +48,7 @@ void LegalMoves::generatePawnsAll(Board const& board, Color color, bool only_att
             generatePawnsPart(board, step_long, color, 16, false, SpecialMove::PAWN_LONG, moves);
         }
     }
+    generatePawnsEnPassant(board, color, position.getEnPassant(), moves);
 }
 
 void LegalMoves::generatePawnsPart(Board const& board, BitBoard mask, Color from_color, int8_t step_delta, bool attack, SpecialMove flag, Moves &moves) {
@@ -76,6 +80,30 @@ void LegalMoves::generatePawnsPart(Board const& board, BitBoard mask, Color from
             move.special = SpecialMove::PAWN_KING;
             moves.push(move);
         } else {
+            moves.push(move);
+        }
+    }
+}
+
+void LegalMoves::generatePawnsEnPassant(Board const& board, Color color, uint8_t cell, Moves &moves) {
+    if (cell == Position::EN_PASSANT_NONE) return;
+    uint8_t col = cell % 8;
+    if (color == Color::WHITE) {
+        if (col != 7 && board.getFigureBitBoard(Color::WHITE, Figure::PAWN).getBit(cell - 7)) {
+            Move move(cell - 7, cell, Color::WHITE, Figure::PAWN, Color::NONE, Figure::NONE, SpecialMove::EN_PASSANT);
+            moves.push(move);
+        }
+        if (col != 0 && board.getFigureBitBoard(Color::WHITE, Figure::PAWN).getBit(cell - 9)) {
+            Move move(cell - 9, cell, Color::WHITE, Figure::PAWN, Color::NONE, Figure::NONE, SpecialMove::EN_PASSANT);
+            moves.push(move);
+        }
+    } else {
+        if (col != 0 && board.getFigureBitBoard(Color::BLACK, Figure::PAWN).getBit(cell + 7)) {
+            Move move(cell + 7, cell, Color::BLACK, Figure::PAWN, Color::NONE, Figure::NONE, SpecialMove::EN_PASSANT);
+            moves.push(move);
+        }
+        if (col != 7 && board.getFigureBitBoard(Color::BLACK, Figure::PAWN).getBit(cell + 9)) {
+            Move move(cell + 9, cell, Color::BLACK, Figure::PAWN, Color::NONE, Figure::NONE, SpecialMove::EN_PASSANT);
             moves.push(move);
         }
     }

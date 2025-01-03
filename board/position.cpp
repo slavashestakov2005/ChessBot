@@ -1,15 +1,17 @@
 #include <board/position.h>
 
+uint8_t Position::EN_PASSANT_NONE = 255;
+
 char player(int step) {
     return step % 2 == 0 ? 'w' : 'b';
 }
 
-Position::Position() : board(), step(0) {
+Position::Position() : board(), en_passant(EN_PASSANT_NONE), step(0) {
     board.defaultPlacement();
     hash = Hash(*this);
 }
 
-Position::Position(Board board) : board(board), step(0) {
+Position::Position(Board board) : board(board), en_passant(EN_PASSANT_NONE), step(0) {
     hash = Hash(*this);
 }
 
@@ -21,8 +23,15 @@ void Position::move(Move move) {
     }
     switch (move.special) {
         case SpecialMove::NONE: break;
+        case SpecialMove::EN_PASSANT:
+            if (move.color_from == Color::WHITE) {
+                removeFigure(move.cell_to - 8, Figure::PAWN, Color::BLACK);
+            } else {
+                removeFigure(move.cell_to + 8, Figure::PAWN, Color::WHITE);
+            }
+            break;
         case SpecialMove::PAWN_LONG:
-            // en pass
+            setEnPassant((move.cell_from + move.cell_to) / 2);
             break;
         case SpecialMove::PAWN_KNIGHT:
             removeFigure(move.cell_to, move.figure_from, move.color_from);
@@ -42,6 +51,11 @@ void Position::move(Move move) {
             break;
     }
     board.updateBitBoards();
+
+    if (move.special != SpecialMove::PAWN_LONG) {
+        setEnPassant(EN_PASSANT_NONE);
+    }
+
     incStep();
 }
 
@@ -49,8 +63,15 @@ Board Position::getBoard() const {
     return board;
 }
 
+uint8_t Position::getEnPassant() const {
+    return en_passant;
+}
+
 Color Position::currentPlayer() const {
-    return player(step) == 'w' ? Color::WHITE : Color::BLACK;
+    char pl = player(step);
+    if (pl == 'w') return Color::WHITE;
+    if (pl == 'b') return Color::BLACK;
+    throw std::invalid_argument("function player(step) return not w and not b");
 }
 
 Hash Position::getHash() const {
@@ -58,8 +79,11 @@ Hash Position::getHash() const {
 }
 
 void Position::incStep() {
+    Color old_player = currentPlayer();
     ++step;
-    hash.inversePlayer();
+    Color new_player = currentPlayer();
+    if (old_player == new_player) setEnPassant(EN_PASSANT_NONE);
+    if (old_player != new_player) hash.inversePlayer();
 }
 
 void Position::removeFigure(uint8_t cell, Figure figure, Color color) {
@@ -68,11 +92,16 @@ void Position::removeFigure(uint8_t cell, Figure figure, Color color) {
         hash.inverse(cell, color, figure);
     }
 }
+
 void Position::addFigure(uint8_t cell, Figure figure, Color color) {
     if (!board.getFigureBitBoard(color, figure).getBit(cell)) {
         board.setFigureBitBoard(color, figure, board.getFigureBitBoard(color, figure).set1(cell));
         hash.inverse(cell, color, figure);
     }
+}
+
+void Position::setEnPassant(uint8_t cell) {
+    en_passant = cell;
 }
 
 std::ostream &operator<<(std::ostream &os, Position const& position) {

@@ -8,12 +8,12 @@ consteval uint64_t HashConstants::nextRandomNumber(uint64_t previous) {
     return HashConstants::MULTIPLIER * previous + HashConstants::SUMMAND;
 }
 
-consteval std::array<std::array<std::array<uint64_t, 6>, 2>, 64> HashConstants::calcConstants() {
-    std::array<std::array<std::array<uint64_t, 6>, 2>, 64> constants;
+consteval std::array<std::array<std::array<uint64_t, 8>, 2>, 64> HashConstants::calcConstants() {
+    std::array<std::array<std::array<uint64_t, 8>, 2>, 64> constants;
     uint64_t previous = HashConstants::SEED;
-    for (uint8_t square = 0; square < 64; square = square + 1) {
-        for (uint8_t side = 0; side < 2; side = side + 1) {
-            for (uint8_t type = 0; type < 6; type = type + 1) {
+    for (uint8_t square = 0; square < 64; ++square) {
+        for (uint8_t side = 0; side < 2; ++side) {
+            for (uint8_t type = 0; type < 8; ++type) {
                 previous = HashConstants::nextRandomNumber(previous);
                 constants[square][side][type] = previous;
             }

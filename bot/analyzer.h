@@ -14,5 +14,6 @@ public:
         BISHOP = 325,
         ROOK = 550,
         QUEEN = 950,
+        ROOK_MOVED = 550,
     };
 };

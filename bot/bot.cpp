@@ -1,5 +1,5 @@
 #include <bot/bot.h>
-#include <bot/analuzer.h>
+#include <bot/analyzer.h>
 #include <bot/legal_moves.h>
 #include <bot/moves_sorted.h>
 #include <bot/visited_states.h>

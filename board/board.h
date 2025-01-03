@@ -14,10 +14,10 @@ public:
     BitBoard getInvColorBitBoard(Color color) const;
     BitBoard getAnyBitBoard() const;
     BitBoard getNoneBitBoard() const;
-    std::array<std::array<BitBoard, 6>, 2> getAllFigures() const;
+    std::array<std::array<BitBoard, 8>, 2> getAllFigures() const;
     void setFigureBitBoard(Color color, Figure figure, BitBoard new_bb);
 private:
-    std::array<std::array<BitBoard, 6>, 2> figures;
+    std::array<std::array<BitBoard, 8>, 2> figures;
     std::array<BitBoard, 2> colorFigures;
     std::array<BitBoard, 2> invColorFigures;
     BitBoard anyFigures;

@@ -278,6 +278,8 @@ GameStatus UI::getStatus() {
         !position.getBoard().getFigureBitBoard(Color::BLACK, Figure::ROOK) &&
         !position.getBoard().getFigureBitBoard(Color::WHITE, Figure::QUEEN) &&
         !position.getBoard().getFigureBitBoard(Color::BLACK, Figure::QUEEN) &&
+        !position.getBoard().getFigureBitBoard(Color::WHITE, Figure::ROOK_MOVED) && 
+        !position.getBoard().getFigureBitBoard(Color::BLACK, Figure::ROOK_MOVED) && 
         (position.getBoard().getFigureBitBoard(Color::WHITE, Figure::KNIGHT) |
          position.getBoard().getFigureBitBoard(Color::WHITE, Figure::BISHOP)).ones() < 2 &&
         (position.getBoard().getFigureBitBoard(Color::BLACK, Figure::KNIGHT) |
@@ -308,18 +310,22 @@ GameStatus UI::getStatus() {
 
 std::string UI::getTextureName(int32_t x, int32_t y) const {
     int32_t id = y * 8 + x;
-    std::array<std::array<BitBoard, 6>, 2> bs = position.getBoard().getAllFigures();
+    std::array<std::array<BitBoard, 8>, 2> bs = position.getBoard().getAllFigures();
     if (bs[(int) Color::WHITE][(int) Figure::PAWN].getBit(id)) return "whitePawn";
     if (bs[(int) Color::WHITE][(int) Figure::KNIGHT].getBit(id)) return "whiteKnight";
     if (bs[(int) Color::WHITE][(int) Figure::BISHOP].getBit(id)) return "whiteBishop";
     if (bs[(int) Color::WHITE][(int) Figure::ROOK].getBit(id)) return "whiteRook";
     if (bs[(int) Color::WHITE][(int) Figure::QUEEN].getBit(id)) return "whiteQueen";
     if (bs[(int) Color::WHITE][(int) Figure::KING].getBit(id)) return "whiteKing";
+    if (bs[(int) Color::WHITE][(int) Figure::ROOK_MOVED].getBit(id)) return "whiteRook";
+    if (bs[(int) Color::WHITE][(int) Figure::KING_MOVED].getBit(id)) return "whiteKing";
     if (bs[(int) Color::BLACK][(int) Figure::PAWN].getBit(id)) return "blackPawn";
     if (bs[(int) Color::BLACK][(int) Figure::KNIGHT].getBit(id)) return "blackKnight";
     if (bs[(int) Color::BLACK][(int) Figure::BISHOP].getBit(id)) return "blackBishop";
     if (bs[(int) Color::BLACK][(int) Figure::ROOK].getBit(id)) return "blackRook";
     if (bs[(int) Color::BLACK][(int) Figure::QUEEN].getBit(id)) return "blackQueen";
     if (bs[(int) Color::BLACK][(int) Figure::KING].getBit(id)) return "blackKing";
+    if (bs[(int) Color::BLACK][(int) Figure::ROOK_MOVED].getBit(id)) return "blackRook";
+    if (bs[(int) Color::BLACK][(int) Figure::KING_MOVED].getBit(id)) return "blackKing";
     return "";
 }

@@ -9,7 +9,7 @@ void Board::placement(std::string s) {
         char low = tolower(s[pos]);
         if (low == ' ') continue;
         Color color = (low == s[pos] ? Color::BLACK : Color::WHITE);
-        Figure figure;
+        Figure figure = Figure::NONE;
         switch (low) {
             case 'p': figure = Figure::PAWN; break;
             case 'n': figure = Figure::KNIGHT; break;
@@ -34,13 +34,17 @@ void Board::updateBitBoards() {
                                        figures[(int) Color::WHITE][(int) Figure::BISHOP] |
                                        figures[(int) Color::WHITE][(int) Figure::ROOK] |
                                        figures[(int) Color::WHITE][(int) Figure::QUEEN] |
-                                       figures[(int) Color::WHITE][(int) Figure::KING];
+                                       figures[(int) Color::WHITE][(int) Figure::KING] |
+                                       figures[(int) Color::WHITE][(int) Figure::ROOK_MOVED] |
+                                       figures[(int) Color::WHITE][(int) Figure::KING_MOVED];
     colorFigures[(int) Color::BLACK] = figures[(int) Color::BLACK][(int) Figure::PAWN] |
                                        figures[(int) Color::BLACK][(int) Figure::KNIGHT] |
                                        figures[(int) Color::BLACK][(int) Figure::BISHOP] |
                                        figures[(int) Color::BLACK][(int) Figure::ROOK] |
                                        figures[(int) Color::BLACK][(int) Figure::QUEEN] |
-                                       figures[(int) Color::BLACK][(int) Figure::KING];
+                                       figures[(int) Color::BLACK][(int) Figure::KING] |
+                                       figures[(int) Color::BLACK][(int) Figure::ROOK_MOVED] |
+                                       figures[(int) Color::BLACK][(int) Figure::KING_MOVED];
     invColorFigures[(int) Color::WHITE] = colorFigures[(int) Color::WHITE].inv();
     invColorFigures[(int) Color::BLACK] = colorFigures[(int) Color::BLACK].inv();
     anyFigures = colorFigures[(int) Color::WHITE] | colorFigures[(int) Color::BLACK];
@@ -67,7 +71,7 @@ BitBoard Board::getNoneBitBoard() const {
     return noneFigures;
 }
 
-std::array<std::array<BitBoard, 6>, 2> Board::getAllFigures() const {
+std::array<std::array<BitBoard, 8>, 2> Board::getAllFigures() const {
     return figures;
 }
 
@@ -85,12 +89,16 @@ std::ostream &operator<<(std::ostream &os, Board const& board) {
             else if (board.getFigureBitBoard(Color::WHITE, Figure::ROOK).getBit(index)) os << 'R';
             else if (board.getFigureBitBoard(Color::WHITE, Figure::QUEEN).getBit(index)) os << 'Q';
             else if (board.getFigureBitBoard(Color::WHITE, Figure::KING).getBit(index)) os << 'K';
+            else if (board.getFigureBitBoard(Color::WHITE, Figure::ROOK_MOVED).getBit(index)) os << 'R';
+            else if (board.getFigureBitBoard(Color::WHITE, Figure::KING_MOVED).getBit(index)) os << 'K';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::PAWN).getBit(index)) os << 'p';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::KNIGHT).getBit(index)) os << 'n';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::BISHOP).getBit(index)) os << 'b';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::ROOK).getBit(index)) os << 'r';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::QUEEN).getBit(index)) os << 'q';
             else if (board.getFigureBitBoard(Color::BLACK, Figure::KING).getBit(index)) os << 'k';
+            else if (board.getFigureBitBoard(Color::BLACK, Figure::ROOK_MOVED).getBit(index)) os << 'r';
+            else if (board.getFigureBitBoard(Color::BLACK, Figure::KING_MOVED).getBit(index)) os << 'k';
             else os << ' ';
         }
         os << std::endl;

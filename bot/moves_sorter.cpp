@@ -1,5 +1,5 @@
 #include <bot/moves_sorted.h>
-#include <bot/analuzer.h>
+#include <bot/analyzer.h>
 #include <algorithm>
 
 Moves MovesSorter::sort(Board const& board, Moves moves) {
@@ -20,6 +20,8 @@ int32_t MovesSorter::move_cost(Board const& board, Move const& move) {
             case Figure::ROOK: result += 1000 * (int32_t) Analyzer::Material::ROOK; break;
             case Figure::QUEEN: result += 1000 * (int32_t) Analyzer::Material::QUEEN; break;
             // case Figure::KING: result += 1000 * (int32_t) Analyzer::Material::KING; break;
+            case Figure::ROOK_MOVED: result += 1000 * (int32_t) Analyzer::Material::ROOK_MOVED; break;
+            // case Figure::KING_MOVED: result += 1000 * (int32_t) Analyzer::Material::KING_MOVED; break;
         }
         switch (move.figure_from) {
             case Figure::PAWN: result -= (int32_t) Analyzer::Material::PAWN; break;
@@ -28,6 +30,8 @@ int32_t MovesSorter::move_cost(Board const& board, Move const& move) {
             case Figure::ROOK: result -= (int32_t) Analyzer::Material::ROOK; break;
             case Figure::QUEEN: result -= (int32_t) Analyzer::Material::QUEEN; break;
             // case Figure::KING: result -= Analyzer::Material::KING; break;
+            case Figure::ROOK_MOVED: result -= 1000 * (int32_t) Analyzer::Material::ROOK_MOVED; break;
+            // case Figure::KING_MOVED: result -= 1000 * (int32_t) Analyzer::Material::KING_MOVED; break;
         }
     }
     return result;

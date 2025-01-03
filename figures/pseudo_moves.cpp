@@ -107,5 +107,7 @@ bool PseudoMoves::isBitten(Board const& board, uint8_t cell, Color color) {
     if (movesRook(board, cell, color, true) & board.getFigureBitBoard(invc, Figure::ROOK)) return true;
     if (movesQueen(board, cell, color, true) & board.getFigureBitBoard(invc, Figure::QUEEN)) return true;
     if (movesKing(board, cell, color, true) & board.getFigureBitBoard(invc, Figure::KING)) return true;
+    if (movesRook(board, cell, color, true) & board.getFigureBitBoard(invc, Figure::ROOK_MOVED)) return true;
+    if (movesKing(board, cell, color, true) & board.getFigureBitBoard(invc, Figure::KING_MOVED)) return true;
     return false;
 }

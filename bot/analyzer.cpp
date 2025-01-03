@@ -1,4 +1,4 @@
-#include <bot/analuzer.h>
+#include <bot/analyzer.h>
 
 enum class MOBILITY {
     KNIGHT = 12,
@@ -26,6 +26,8 @@ int32_t Analyzer::material(Board const& board) {
                                           board.getFigureBitBoard(Color::BLACK, Figure::ROOK).ones());
     result += (int32_t) Material::QUEEN * (board.getFigureBitBoard(Color::WHITE, Figure::QUEEN).ones() -
                                            board.getFigureBitBoard(Color::BLACK, Figure::QUEEN).ones());
+    result += (int32_t) Material::ROOK_MOVED * (board.getFigureBitBoard(Color::WHITE, Figure::ROOK_MOVED).ones() -
+                                                board.getFigureBitBoard(Color::BLACK, Figure::ROOK_MOVED).ones());
     return result;
 }
 
