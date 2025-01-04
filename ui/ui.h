@@ -1,5 +1,6 @@
 #pragma once
 #include <board/position.h>
+#include <bot/moves.h>
 #include <cstdint>
 #include <SFML/Graphics.hpp>
 
@@ -8,7 +9,8 @@ enum class GameStatus {
     BLACK_TO_MOVE,
     WHITE_WON,
     BLACK_WON,
-    DRAW
+    DRAW,
+    UNKNOWN,
 };
 
 class UI {
@@ -20,6 +22,8 @@ private:
     sf::Event event;
     Position position;
     sf::Vector2i buff;
+    GameStatus status;
+    Moves selected;
 
     static int32_t BOARD_MARGIN;
 

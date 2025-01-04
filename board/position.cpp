@@ -9,46 +9,68 @@ char player(int step) {
 Position::Position() : board(), en_passant(EN_PASSANT_NONE), step(0) {
     board.defaultPlacement();
     hash = Hash(*this);
+    white_goal = black_goal = 0;
 }
 
 Position::Position(Board board) : board(board), en_passant(EN_PASSANT_NONE), step(0) {
     hash = Hash(*this);
+    white_goal = black_goal = 0;
 }
 
 void Position::move(Move move) {
-    removeFigure(move.cell_from, move.figure_from, move.color_from);
-    addFigure(move.cell_to, move.figure_from, move.color_from);
-    if (move.figure_to != Figure::NONE) {
-        removeFigure(move.cell_to, move.figure_to, move.color_to);
-    }
-    switch (move.special) {
-        case SpecialMove::NONE: break;
-        case SpecialMove::EN_PASSANT:
-            if (move.color_from == Color::WHITE) {
-                removeFigure(move.cell_to - 8, Figure::PAWN, Color::BLACK);
-            } else {
-                removeFigure(move.cell_to + 8, Figure::PAWN, Color::WHITE);
-            }
-            break;
-        case SpecialMove::PAWN_LONG:
-            setEnPassant((move.cell_from + move.cell_to) / 2);
-            break;
-        case SpecialMove::PAWN_KNIGHT:
-            removeFigure(move.cell_to, move.figure_from, move.color_from);
-            addFigure(move.cell_to, Figure::KNIGHT, move.color_from);
-            break;
-        case SpecialMove::PAWN_BISHOP:
-            removeFigure(move.cell_to, move.figure_from, move.color_from);
-            addFigure(move.cell_to, Figure::BISHOP, move.color_from);
-            break;
-        case SpecialMove::PAWN_ROOK:
-            removeFigure(move.cell_to, move.figure_from, move.color_from);
-            addFigure(move.cell_to, Figure::ROOK, move.color_from);
-            break;
-        case SpecialMove::PAWN_QUEEN:
-            removeFigure(move.cell_to, move.figure_from, move.color_from);
-            addFigure(move.cell_to, Figure::QUEEN, move.color_from);
-            break;
+    if (move.special == SpecialMove::CASTLE) {
+        Color color = move.color_from;
+        uint8_t king = move.cell_from, rook = move.cell_to;
+        removeFigure(king, Figure::KING, color);
+        removeFigure(rook, Figure::ROOK, color);
+        uint8_t delta_king = rook > king ? 2 : -2;
+        uint8_t delta_rook = rook > king ? 1 : -1;
+        addFigure(king + delta_king, Figure::KING_MOVED, color);
+        addFigure(king + delta_rook, Figure::ROOK_MOVED, color);
+    } else {
+        removeFigure(move.cell_from, move.figure_from, move.color_from);
+        {
+            Figure new_fig = move.figure_from;
+            if (new_fig == Figure::KING) new_fig = Figure::KING_MOVED;
+            if (new_fig == Figure::ROOK) new_fig = Figure::ROOK_MOVED;
+            addFigure(move.cell_to, new_fig, move.color_from);
+        }
+        if (move.figure_to != Figure::NONE) {
+            removeFigure(move.cell_to, move.figure_to, move.color_to);
+        }
+        switch (move.special) {
+            case SpecialMove::NONE: break;
+            case SpecialMove::EN_PASSANT:
+                if (move.color_from == Color::WHITE) {
+                    removeFigure(move.cell_to - 8, Figure::PAWN, Color::BLACK);
+                } else {
+                    removeFigure(move.cell_to + 8, Figure::PAWN, Color::WHITE);
+                }
+                break;
+            case SpecialMove::PAWN_LONG:
+                setEnPassant((move.cell_from + move.cell_to) / 2);
+                break;
+            case SpecialMove::PAWN_KNIGHT:
+                removeFigure(move.cell_to, move.figure_from, move.color_from);
+                addFigure(move.cell_to, Figure::KNIGHT, move.color_from);
+                break;
+            case SpecialMove::PAWN_BISHOP:
+                removeFigure(move.cell_to, move.figure_from, move.color_from);
+                addFigure(move.cell_to, Figure::BISHOP, move.color_from);
+                break;
+            case SpecialMove::PAWN_ROOK:
+                removeFigure(move.cell_to, move.figure_from, move.color_from);
+                addFigure(move.cell_to, Figure::ROOK_MOVED, move.color_from);
+                break;
+            case SpecialMove::PAWN_QUEEN:
+                removeFigure(move.cell_to, move.figure_from, move.color_from);
+                addFigure(move.cell_to, Figure::QUEEN, move.color_from);
+                break;
+            case SpecialMove::PAWN_KING:
+                removeFigure(move.cell_to, move.figure_from, move.color_from);
+                addFigure(move.cell_to, Figure::KING_MOVED, move.color_from);
+                break;
+        }
     }
     board.updateBitBoards();
 
@@ -76,6 +98,26 @@ Color Position::currentPlayer() const {
 
 Hash Position::getHash() const {
     return hash;
+}
+
+uint8_t Position::getWhiteGoal() const {
+    return white_goal;
+}
+
+uint8_t Position::getBlackGoal() const {
+    return black_goal;
+}
+
+bool Position::isWhiteWon() const {
+    BitBoard black_kings = board.getFigureBitBoard(Color::BLACK, Figure::KING) |
+                           board.getFigureBitBoard(Color::BLACK, Figure::KING_MOVED);
+    return black_kings.ones() <= white_goal;
+}
+
+bool Position::isBlackWon() const {
+    BitBoard white_kings = board.getFigureBitBoard(Color::WHITE, Figure::KING) |
+                           board.getFigureBitBoard(Color::WHITE, Figure::KING_MOVED);
+    return white_kings.ones() <= black_goal;
 }
 
 void Position::incStep() {

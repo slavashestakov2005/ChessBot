@@ -14,6 +14,10 @@ public:
     uint8_t getEnPassant() const;
     Color currentPlayer() const;
     Hash getHash() const;
+    uint8_t getWhiteGoal() const;
+    uint8_t getBlackGoal() const;
+    bool isWhiteWon() const;
+    bool isBlackWon() const;
 private:
     void incStep();
     void removeFigure(uint8_t cell, Figure figure, Color color);
@@ -24,6 +28,7 @@ private:
     uint8_t en_passant;
     int step;
     Hash hash;
+    uint8_t white_goal, black_goal;
 };
 
 std::ostream &operator<<(std::ostream &os, Position const& position);

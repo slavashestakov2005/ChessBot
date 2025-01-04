@@ -3,17 +3,17 @@
 #include <figures/knight.h>
 #include <figures/line.h>
 
-BitBoard moveLine(Board const& board, uint8_t cell, Color color, bool attack_only, Moves::LineDirection dir, bool first_block) {
-    BitBoard blockers = Moves::LINES[cell][(int) dir] & board.getAnyBitBoard();
+BitBoard moveLine(Board const& board, uint8_t cell, Color color, bool attack_only, MovesConstants::LineDirection dir, bool first_block) {
+    BitBoard blockers = MovesConstants::LINES[cell][(int) dir] & board.getAnyBitBoard();
     if (blockers.getAll() == 0) {
         if (attack_only) return 0;
-        return Moves::LINES[cell][(int) dir];
+        return MovesConstants::LINES[cell][(int) dir];
     }
     uint8_t block_pos;
     if (first_block) block_pos = blockers.getHigh1();
     else block_pos = blockers.getLow1();
     BitBoard moves;
-    if (!attack_only) moves = Moves::LINES[cell][(int) dir] ^ Moves::LINES[block_pos][(int) dir];
+    if (!attack_only) moves = MovesConstants::LINES[cell][(int) dir] ^ MovesConstants::LINES[block_pos][(int) dir];
     if (board.getColorBitBoard(color).getBit(block_pos)) moves = moves.set0(block_pos);
     else moves = moves.set1(block_pos);
     return moves;
@@ -72,18 +72,18 @@ BitBoard PseudoMoves::movesKnight(Board const& board, uint8_t cell, Color color,
 }
 
 BitBoard PseudoMoves::movesBishop(Board const& board, uint8_t cell, Color color, bool only_attack) {
-    BitBoard ne = moveLine(board, cell, color, only_attack, Moves::LineDirection::NORTH_EAST, false);
-    BitBoard nw = moveLine(board, cell, color, only_attack, Moves::LineDirection::NORTH_WEST, false);
-    BitBoard sw = moveLine(board, cell, color, only_attack, Moves::LineDirection::SOUTH_WEST, true);
-    BitBoard se = moveLine(board, cell, color, only_attack, Moves::LineDirection::SOUTH_EAST, true);
+    BitBoard ne = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::NORTH_EAST, false);
+    BitBoard nw = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::NORTH_WEST, false);
+    BitBoard sw = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::SOUTH_WEST, true);
+    BitBoard se = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::SOUTH_EAST, true);
     return ne | nw | sw | se;
 }
 
 BitBoard PseudoMoves::movesRook(Board const& board, uint8_t cell, Color color, bool only_attack) {
-    BitBoard e = moveLine(board, cell, color, only_attack, Moves::LineDirection::EAST, false);
-    BitBoard n = moveLine(board, cell, color, only_attack, Moves::LineDirection::NORTH, false);
-    BitBoard w = moveLine(board, cell, color, only_attack, Moves::LineDirection::WEST, true);
-    BitBoard s = moveLine(board, cell, color, only_attack, Moves::LineDirection::SOUTH, true);
+    BitBoard e = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::EAST, false);
+    BitBoard n = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::NORTH, false);
+    BitBoard w = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::WEST, true);
+    BitBoard s = moveLine(board, cell, color, only_attack, MovesConstants::LineDirection::SOUTH, true);
     return e | n | w | s;
 }
 

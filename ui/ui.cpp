@@ -30,6 +30,7 @@ UI::UI() {
 
     position = Position();
     buff = sf::Vector2i(INT32_MAX, INT32_MAX);
+    status = GameStatus::UNKNOWN;
 }
 
 void UI::start() {
@@ -57,20 +58,21 @@ void UI::start() {
                 }
                 if (cell != sf::Vector2i(INT32_MAX, INT32_MAX)) {
                     SpecialMove special;
-                    if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x / 2) {
-                        if ((float)mouse.y - getCellPosition(cell.x, cell.y).y < getCellSize().y / 2) {
+                    if ((float)mouse.y - getCellPosition(cell.x, cell.y).y < getCellSize().y / 2) {
+                        if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x * 0.33f) {
                             special = SpecialMove::PAWN_KNIGHT;
                         }
-                        else {
+                        else if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x * 0.67f) {
                             special = SpecialMove::PAWN_BISHOP;
-                        }
-                    }
-                    else {
-                        if ((float)mouse.y - getCellPosition(cell.x, cell.y).y < getCellSize().y / 2) {
+                        } else {
                             special = SpecialMove::PAWN_ROOK;
                         }
-                        else {
+                    } else {
+                        if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x / 2) {
                             special = SpecialMove::PAWN_QUEEN;
+                        }
+                        else {
+                            special = SpecialMove::PAWN_KING;
                         }
                     }
                     if (cell == buff) {
@@ -78,7 +80,9 @@ void UI::start() {
                         sound.setBuffer(*Storage::getSound("move"));
                         sound.play();
                     }
-                    else if (position.getBoard().getColorBitBoard(Color::WHITE).getBit(cell.y * 8 + cell.x)) {
+                    else if (position.getBoard().getColorBitBoard(Color::WHITE).getBit(cell.y * 8 + cell.x) &&
+                             (!position.getBoard().getFigureBitBoard(Color::WHITE, Figure::KING).getBit(buff.y * 8 + buff.x) ||
+                              !position.getBoard().getFigureBitBoard(Color::WHITE, Figure::ROOK).getBit(cell.y * 8 + cell.x))) {
                         buff = cell;
                         sound.setBuffer(*Storage::getSound("move"));
                         sound.play();
@@ -98,6 +102,7 @@ void UI::start() {
                         buff = sf::Vector2i(INT32_MAX, INT32_MAX);
                         if (moveId != -1) {
                             position.move(moves[moveId]);
+                            status = GameStatus::UNKNOWN;
                             sound.setBuffer(*Storage::getSound("move"));
                             sound.play();
                             if (moves[moveId].figure_to != Figure::NONE || moves[moveId].special == SpecialMove::EN_PASSANT) {
@@ -112,9 +117,10 @@ void UI::start() {
                                 update();
                                 Move move = Bot::getBestMove(position, Color::BLACK);
                                 position.move(move);
+                                status = GameStatus::UNKNOWN;
                                 sound.setBuffer(*Storage::getSound("move"));
                                 sound.play();
-                                if (move.figure_to != Figure::NONE || move.special == SpecialMove::EN_PASSANT) {
+                                if (move.figure_to != Figure::NONE && move.special != SpecialMove::CASTLE || move.special == SpecialMove::EN_PASSANT) {
                                     sound.setBuffer(*Storage::getSound("capture"));
                                     sound.play();
                                 }
@@ -191,37 +197,36 @@ void UI::drawSelectedPieceMoves() {
     }
     std::string side = name.substr(0, 5);
 
-    Moves moves;
-    if (side == "white") {
-        moves = LegalMoves::generate(position, Color::WHITE);
-    }
-    else {
-        moves = LegalMoves::generate(position, Color::BLACK);
-    }
+    if (status == GameStatus::UNKNOWN) getStatus();
 
-    for (int32_t i = 0; i < moves.size(); i = i + 1) {
-        if (moves[i].cell_from == buff.y * 8 + buff.x) {
-            uint8_t x = moves[i].cell_to % 8;
-            uint8_t y = moves[i].cell_to / 8;
-            if (moves[i].figure_from == Figure::PAWN && (y == 0 || y == 7)) {
+    for (int32_t i = 0; i < selected.size(); i = i + 1) {
+        if (selected[i].cell_from == buff.y * 8 + buff.x) {
+            uint8_t x = selected[i].cell_to % 8;
+            uint8_t y = selected[i].cell_to / 8;
+            if (selected[i].figure_from == Figure::PAWN && (y == 0 || y == 7)) {
                 sf::Sprite sprite;
                 sprite.setTexture(*Storage::getTexture(side + "Knight"));
-                sprite.setScale(getCellSize().x / sprite.getLocalBounds().width * 0.5f, getCellSize().y / sprite.getLocalBounds().height * 0.5f);
+                sprite.setScale(getCellSize().x / sprite.getLocalBounds().width * 0.33f, getCellSize().y / sprite.getLocalBounds().height * 0.33f);
                 sprite.setColor(sf::Color(255, 255, 255, 63));
 
                 sprite.setPosition(getCellPosition(x, y));
                 window.draw(sprite);
 
                 sprite.setTexture(*Storage::getTexture(side + "Bishop"));
-                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x, getCellPosition(x, y).y + getCellSize().y / 2));
+                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x + getCellSize().x * 0.33, getCellPosition(x, y).y));
                 window.draw(sprite);
 
                 sprite.setTexture(*Storage::getTexture(side + "Rook"));
-                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x + getCellSize().x / 2, getCellPosition(x, y).y));
+                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x + getCellSize().x * 0.67, getCellPosition(x, y).y));
                 window.draw(sprite);
 
                 sprite.setTexture(*Storage::getTexture(side + "Queen"));
-                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x + getCellSize().x / 2, getCellPosition(x, y).y + getCellSize().y / 2));
+                sprite.setScale(getCellSize().x / sprite.getLocalBounds().width * 0.5f, getCellSize().y / sprite.getLocalBounds().height * 0.5f);
+                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x, getCellPosition(x, y).y + getCellSize().y / 2));
+                window.draw(sprite);
+
+                sprite.setTexture(*Storage::getTexture(side + "King"));
+                sprite.setPosition(sf::Vector2f(getCellPosition(x, y).x + getCellSize().x * 0.5f, getCellPosition(x, y).y + getCellSize().y / 2));
                 window.draw(sprite);
             }
             else {
@@ -268,6 +273,7 @@ sf::Vector2f UI::getCellPosition(int32_t x, int32_t y) {
 }
 
 GameStatus UI::getStatus() {
+    if (status != GameStatus::UNKNOWN) return status;
     // if (position.fiftyMovesRuleDraw() || position.threefoldRepetitionDraw()) {
     //     return GameStatus::DRAW;
     // }
@@ -284,28 +290,21 @@ GameStatus UI::getStatus() {
          position.getBoard().getFigureBitBoard(Color::WHITE, Figure::BISHOP)).ones() < 2 &&
         (position.getBoard().getFigureBitBoard(Color::BLACK, Figure::KNIGHT) |
          position.getBoard().getFigureBitBoard(Color::BLACK, Figure::BISHOP)).ones() < 2) {
-        return GameStatus::DRAW;
+        return status = GameStatus::DRAW;
     }
+
+    if (position.isWhiteWon()) return status = GameStatus::WHITE_WON;
+    if (position.isBlackWon()) return status = GameStatus::BLACK_WON;
 
     if (position.currentPlayer() == Color::BLACK) {
-        Moves moves = LegalMoves::generate(position, Color::BLACK);
-        if (moves.size() == 0) {
-            if (PseudoMoves::isBitten(position.getBoard(), position.getBoard().getFigureBitBoard(Color::BLACK, Figure::KING).getLow1(), Color::BLACK)) {
-                return GameStatus::WHITE_WON;
-            }
-            return GameStatus::DRAW;
-        }
-        return GameStatus::BLACK_TO_MOVE;
+        selected = LegalMoves::generate(position, Color::BLACK);
+        if (selected.size() == 0) return status = GameStatus::DRAW;
+        return status = GameStatus::BLACK_TO_MOVE;
+    } else {
+        selected = LegalMoves::generate(position, Color::WHITE);
+        if (selected.size() == 0) return status = GameStatus::DRAW;
+        return status = GameStatus::WHITE_TO_MOVE;
     }
-
-    Moves moves = LegalMoves::generate(position, Color::WHITE);
-    if (moves.size() == 0) {
-        if (PseudoMoves::isBitten(position.getBoard(), position.getBoard().getFigureBitBoard(Color::WHITE, Figure::KING).getLow1(), Color::WHITE)) {
-            return GameStatus::BLACK_WON;
-        }
-        return GameStatus::DRAW;
-    }
-    return GameStatus::WHITE_TO_MOVE;
 }
 
 std::string UI::getTextureName(int32_t x, int32_t y) const {

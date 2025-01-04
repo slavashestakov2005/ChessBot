@@ -1,5 +1,7 @@
 #include <bot/legal_moves.h>
+#include <figures/line.h>
 #include <figures/pseudo_moves.h>
+#include <vector>
 
 template <typename Func>
 void LegalMoves::generateForFigureType(Board const& board, Color color, Figure figure, Func generator, bool only_attack, Moves &moves) {
@@ -23,6 +25,7 @@ Moves LegalMoves::generate(Position const& position, Color color, bool only_atta
     generateForFigureType(board, color, Figure::KING, PseudoMoves::movesKing, only_attack, moves);
     generateForFigureType(board, color, Figure::ROOK_MOVED, PseudoMoves::movesRook, only_attack, moves);
     generateForFigureType(board, color, Figure::KING_MOVED, PseudoMoves::movesKing, only_attack, moves);
+    generateCastle(board, color, only_attack, moves);
     return moves;
 }
 
@@ -104,6 +107,33 @@ void LegalMoves::generatePawnsEnPassant(Board const& board, Color color, uint8_t
         }
         if (col != 7 && board.getFigureBitBoard(Color::BLACK, Figure::PAWN).getBit(cell + 9)) {
             Move move(cell + 9, cell, Color::BLACK, Figure::PAWN, Color::NONE, Figure::NONE, SpecialMove::EN_PASSANT);
+            moves.push(move);
+        }
+    }
+}
+
+void LegalMoves::generateCastle(Board const& board, Color color, bool only_attack, Moves &moves) {
+    if (only_attack) return;
+    BitBoard bb_kings = board.getFigureBitBoard(color, Figure::KING);
+    BitBoard bb_rooks = board.getFigureBitBoard(color, Figure::ROOK);
+    std::vector<uint8_t> kings, rooks;
+    while (bb_kings) {
+        uint8_t cell = bb_kings.getHigh1();
+        bb_kings = bb_kings.set0(cell);
+        kings.push_back(cell);
+    }
+    while (bb_rooks) {
+        uint8_t cell = bb_rooks.getHigh1();
+        bb_rooks = bb_rooks.set0(cell);
+        rooks.push_back(cell);
+    }
+    Move move(255, 255, color, Figure::KING, color, Figure::ROOK, SpecialMove::CASTLE);
+    for (uint8_t king : kings) {
+        for (uint8_t rook : rooks) {
+            if (abs(king - rook) < 2) continue;
+            if (board.getAnyBitBoard() & MovesConstants::SEGMENTS[king][rook]) continue;
+            move.cell_from = king;
+            move.cell_to = rook;
             moves.push(move);
         }
     }

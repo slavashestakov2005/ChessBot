@@ -1,17 +1,17 @@
-consteval BitBoard Moves::evalOneLine(uint8_t cell, Moves::LineDirection dir) {
+consteval BitBoard MovesConstants::evalOneLine(uint8_t cell, MovesConstants::LineDirection dir) {
     BitBoard mask;
     int8_t x = cell % 8;
     int8_t y = cell / 8;
     while (true) {
         switch (dir) {
-            case Moves::LineDirection::EAST: ++x; break;
-            case Moves::LineDirection::NORTH_EAST: ++x, ++y; break;
-            case Moves::LineDirection::NORTH: ++y; break;
-            case Moves::LineDirection::NORTH_WEST: --x, ++y; break;
-            case Moves::LineDirection::WEST: --x; break;
-            case Moves::LineDirection::SOUTH_WEST: --x, --y; break;
-            case Moves::LineDirection::SOUTH: --y; break;
-            case Moves::LineDirection::SOUTH_EAST: ++x, --y; break;
+            case MovesConstants::LineDirection::EAST: ++x; break;
+            case MovesConstants::LineDirection::NORTH_EAST: ++x, ++y; break;
+            case MovesConstants::LineDirection::NORTH: ++y; break;
+            case MovesConstants::LineDirection::NORTH_WEST: --x, ++y; break;
+            case MovesConstants::LineDirection::WEST: --x; break;
+            case MovesConstants::LineDirection::SOUTH_WEST: --x, --y; break;
+            case MovesConstants::LineDirection::SOUTH: --y; break;
+            case MovesConstants::LineDirection::SOUTH_EAST: ++x, --y; break;
         }
         if (x < 0 || x > 7 || y < 0 || y > 7) break;
         mask = mask.set1(y * 8 + x);
@@ -19,17 +19,35 @@ consteval BitBoard Moves::evalOneLine(uint8_t cell, Moves::LineDirection dir) {
     return mask;
 }
 
-consteval std::array<std::array<BitBoard, 8>, 64> Moves::evalLines() {
+consteval std::array<std::array<BitBoard, 8>, 64> MovesConstants::evalLines() {
     std::array<std::array<BitBoard, 8>, 64> masks;
     for (int cell = 0; cell < 64; ++cell) {
-        masks[cell][(int) Moves::LineDirection::EAST] = evalOneLine(cell, Moves::LineDirection::EAST);
-        masks[cell][(int) Moves::LineDirection::NORTH_EAST] = evalOneLine(cell, Moves::LineDirection::NORTH_EAST);
-        masks[cell][(int) Moves::LineDirection::NORTH] = evalOneLine(cell, Moves::LineDirection::NORTH);
-        masks[cell][(int) Moves::LineDirection::NORTH_WEST] = evalOneLine(cell, Moves::LineDirection::NORTH_WEST);
-        masks[cell][(int) Moves::LineDirection::WEST] = evalOneLine(cell, Moves::LineDirection::WEST);
-        masks[cell][(int) Moves::LineDirection::SOUTH_WEST] = evalOneLine(cell, Moves::LineDirection::SOUTH_WEST);
-        masks[cell][(int) Moves::LineDirection::SOUTH] = evalOneLine(cell, Moves::LineDirection::SOUTH);
-        masks[cell][(int) Moves::LineDirection::SOUTH_EAST] = evalOneLine(cell, Moves::LineDirection::SOUTH_EAST);
+        masks[cell][(int) MovesConstants::LineDirection::EAST] = evalOneLine(cell, MovesConstants::LineDirection::EAST);
+        masks[cell][(int) MovesConstants::LineDirection::NORTH_EAST] = evalOneLine(cell, MovesConstants::LineDirection::NORTH_EAST);
+        masks[cell][(int) MovesConstants::LineDirection::NORTH] = evalOneLine(cell, MovesConstants::LineDirection::NORTH);
+        masks[cell][(int) MovesConstants::LineDirection::NORTH_WEST] = evalOneLine(cell, MovesConstants::LineDirection::NORTH_WEST);
+        masks[cell][(int) MovesConstants::LineDirection::WEST] = evalOneLine(cell, MovesConstants::LineDirection::WEST);
+        masks[cell][(int) MovesConstants::LineDirection::SOUTH_WEST] = evalOneLine(cell, MovesConstants::LineDirection::SOUTH_WEST);
+        masks[cell][(int) MovesConstants::LineDirection::SOUTH] = evalOneLine(cell, MovesConstants::LineDirection::SOUTH);
+        masks[cell][(int) MovesConstants::LineDirection::SOUTH_EAST] = evalOneLine(cell, MovesConstants::LineDirection::SOUTH_EAST);
+    }
+    return masks;
+}
+
+consteval BitBoard MovesConstants::evalOneSegment(uint8_t from, uint8_t to) {
+    BitBoard mask;
+    for (uint8_t cell = std::min(from, to) + 1; cell < std::max(from, to); ++cell) {
+        mask = mask.set1(cell);
+    }
+    return mask;
+}
+
+consteval std::array<std::array<BitBoard, 64>, 64> MovesConstants::evalSegments() {
+    std::array<std::array<BitBoard, 64>, 64> masks;
+    for (uint8_t from = 0; from < 64; ++from) {
+        for (uint8_t to = 0; to < 64; ++to) {
+            masks[from][to] = evalOneSegment(from, to);
+        }
     }
     return masks;
 }

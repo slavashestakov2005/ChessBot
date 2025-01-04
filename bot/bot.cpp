@@ -6,7 +6,7 @@
 #include <figures/pseudo_moves.h>
 
 const int32_t INF = 1e9;
-const int DEPTH = 2;
+const int DEPTH = 6;
 
 Move Bot::getBestMove(const Position& position, Color color) {
     // int32_t cur_cost = Analyzer::analyze(position.getBoard());
@@ -34,16 +34,13 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int3
     if (tableResult < moves.size()) {
         std::swap(moves[0], moves[tableResult]);
     }
-    bool check = PseudoMoves::isBitten(position.getBoard(), position.getBoard().getFigureBitBoard(Color::BLACK, Figure::KING).getLow1(), Color::BLACK);
-    if (moves.size() == 0) {
-        if (check) return {INF - depthLeft, true, Move()};
-        return {0, true, Move()};
-    }
+    if (position.isWhiteWon()) return {INF - depthLeft, true, Move()};
+    if (moves.size() == 0) return {0, true, Move()};
     for (uint8_t i = 0; i < moves.size(); ++i) {
         Move move = moves[i];
         Position copy = position;
         copy.move(move);
-        auto [evaluation, gameWasFinished, next_move] = alphaBetaMax(copy, alpha, beta, depthLeft - !check, depthCurrent + 1);
+        auto [evaluation, gameWasFinished, next_move] = alphaBetaMax(copy, alpha, beta, depthLeft - 1, depthCurrent + 1);
         if (evaluation <= alpha) {
             VisitedStates::addState(position.getHash(), depthCurrent, bestMoveIndex);
             return {alpha, gameWasFinishedOnBestMove, bestMove};
@@ -72,16 +69,13 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int3
     if (tableResult < moves.size()) {
         std::swap(moves[0], moves[tableResult]);
     }
-    bool check = PseudoMoves::isBitten(position.getBoard(), position.getBoard().getFigureBitBoard(Color::WHITE, Figure::KING).getLow1(), Color::WHITE);
-    if (moves.size() == 0) {
-        if (check) return {-INF + depthLeft, true, Move()};
-        return {0, true, Move()};
-    }
+    if (position.isBlackWon()) return {-INF + depthLeft, true, Move()};
+    if (moves.size() == 0) return {0, true, Move()};
     for (uint8_t i = 0; i < moves.size(); ++i) {
         Move move = moves[i];
         Position copy = position;
         copy.move(move);
-        auto [evaluation, gameWasFinished, next_move] = alphaBetaMin(copy, alpha, beta, depthLeft - !check, depthCurrent + 1);
+        auto [evaluation, gameWasFinished, next_move] = alphaBetaMin(copy, alpha, beta, depthLeft - 1, depthCurrent + 1);
         if (evaluation >= beta) {
             VisitedStates::addState(position.getHash(), depthCurrent, bestMoveIndex);
             return {beta, gameWasFinishedOnBestMove, bestMove};
