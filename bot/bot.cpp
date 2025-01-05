@@ -9,7 +9,6 @@ const int32_t INF = 1e9;
 const int DEPTH = 6;
 
 Move Bot::getBestMove(const Position& position, Color color) {
-    // int32_t cur_cost = Analyzer::analyze(position.getBoard());
     auto [eval, gameWasFinished, move] = alphaBeta(position, color, DEPTH);
     return move;
 }

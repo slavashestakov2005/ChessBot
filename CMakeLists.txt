@@ -58,4 +58,5 @@ add_executable(bot_ui
     ${SOURCE_UI}
 )
 
+add_definitions(-O3)
 target_link_libraries(bot_ui sfml-system sfml-window sfml-graphics sfml-audio)
