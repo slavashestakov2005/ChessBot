@@ -3,10 +3,11 @@
 #include <ui/ui.h>
 
 void hello() {
-    std::cout << "===== Sophisticated Queue Chess Bot! =====" << std::endl;
+    std::cout << "===== Sophisticated Queue Chess Bot! =====" << std::endl << std::endl;
 }
 
 void get_steps_cycle() {
+    std::cout << std::endl;
     while (true) {
         std::cout << "Input steps queue cycle (w or b without other symbols): ";
         std::string steps;
@@ -21,6 +22,7 @@ void get_steps_cycle() {
 }
 
 PlayerType get_player_type(std::string whom) {
+    std::cout << std::endl;
     while (true) {
         std::cout << "Input player type (bot or user) for " << whom << ": ";
         std::string type;
@@ -35,11 +37,96 @@ PlayerType get_player_type(std::string whom) {
     }
 }
 
+std::string get_placement_line(int line) {
+    while (true) {
+        std::cout << "Input placement for line " << line << ": ";
+        std::string inp;
+        std::cin >> inp;
+        if (inp.size() != 8) {
+            std::cout << "Error: expected line with len 8" << std::endl;
+            continue;
+        }
+        bool ok = true;
+        for (int pos = 0; pos < inp.size(); ++pos) {
+            char c = tolower(inp[pos]);
+            if (c != 'p' && c != 'n' && c != 'b' && c != 'r' && c != 'q' && c != 'k' && c != '-') {
+                std::cout << "Error: unexpected symbol '" << inp[pos] << "' at pos " << pos + 1 << std::endl;
+                ok = false;
+            }
+            if ((line == 1 || line == 8) && c == 'p') {
+                std::cout << "Error: line can't contain pawns" << std::endl;
+                ok = false;
+            }
+            if (c == '-') {
+                inp[pos] = ' ';
+            }
+        }
+        if (ok) {
+            return inp;
+        }
+    }
+}
+
+int get_goal(std::string we, std::string opponent, int min_value, int max_value) {
+    std::cout << std::endl;
+    while (true) {
+        std::cout << we << " won, when count of " << opponent << " kings <=: ";
+        int goal;
+        std::cin >> goal;
+        if (goal < min_value || goal > max_value) {
+            std::cout << "Error: expected value from [" << min_value << "; " << max_value << "]" << std::endl;
+            continue;
+        }
+        return goal;
+    }
+}
+
+void get_placement() {
+    std::cout << std::endl;
+    while (true) {
+        std::cout << "Use default placement (yes or no)? ";
+        std::string ans;
+        std::cin >> ans;
+        if (ans == "yes") {
+            return;
+        } else if (ans == "no") {
+            break;
+        } else {
+            std::cout << "Error: expected 'yes' or 'no'" << std::endl;
+        }
+    }
+    std::cout << "For each line input 8 symbols: capital for white, lowercase for black, - for space" << std::endl;
+    std::cout << "Figure symbols: p (pawn), n (knight), b (bishop), r (rook), q (queen), k (king)" << std::endl;
+    std::cout << "Lines 1 and 8 can't contain pawns" << std::endl;
+    int white_kings, black_kings;
+    while (true) {
+        std::string all;
+        for (int line = 1; line <= 8; ++line) {
+            all += get_placement_line(line);
+        }
+        white_kings = std::count(all.begin(), all.end(), 'K');
+        black_kings = std::count(all.begin(), all.end(), 'k');
+        if (white_kings < 1) {
+            std::cout << "Error: white king not found" << std::endl; 
+        }
+        if (black_kings < 1) {
+            std::cout << "Error: black king not found" << std::endl;
+        }
+        if (white_kings >= 1 && black_kings >= 1) {
+            Settings::setPlacement(all);
+            break;
+        }
+    }
+    Settings::setWhiteGoal(get_goal("White", "black", 0, black_kings - 1));
+    Settings::setBlackGoal(get_goal("Black", "white", 0, white_kings - 1));
+}
+
 void get_settings() {
     std::cout << "Input settings for game" << std::endl;
     get_steps_cycle();
     Settings::setWhitePlayerType(get_player_type("white"));
     Settings::setBlackPlayerType(get_player_type("black"));
+    get_placement();
 }
 
 int main() {

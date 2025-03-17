@@ -28,7 +28,6 @@ private:
     uint8_t en_passant;
     int step;
     Hash hash;
-    uint8_t white_goal, black_goal;
 };
 
 std::ostream &operator<<(std::ostream &os, Position const& position);

@@ -6,12 +6,10 @@ uint8_t Position::EN_PASSANT_NONE = 255;
 Position::Position() : board(), en_passant(EN_PASSANT_NONE), step(0) {
     board.defaultPlacement();
     hash = Hash(*this);
-    white_goal = black_goal = 0;
 }
 
 Position::Position(Board board) : board(board), en_passant(EN_PASSANT_NONE), step(0) {
     hash = Hash(*this);
-    white_goal = black_goal = 0;
 }
 
 void Position::move(Move move) {
@@ -97,24 +95,16 @@ Hash Position::getHash() const {
     return hash;
 }
 
-uint8_t Position::getWhiteGoal() const {
-    return white_goal;
-}
-
-uint8_t Position::getBlackGoal() const {
-    return black_goal;
-}
-
 bool Position::isWhiteWon() const {
     BitBoard black_kings = board.getFigureBitBoard(Color::BLACK, Figure::KING) |
                            board.getFigureBitBoard(Color::BLACK, Figure::KING_MOVED);
-    return black_kings.ones() <= white_goal;
+    return black_kings.ones() <= Settings::getWhiteGoal();
 }
 
 bool Position::isBlackWon() const {
     BitBoard white_kings = board.getFigureBitBoard(Color::WHITE, Figure::KING) |
                            board.getFigureBitBoard(Color::WHITE, Figure::KING_MOVED);
-    return white_kings.ones() <= black_goal;
+    return white_kings.ones() <= Settings::getBlackGoal();
 }
 
 void Position::incStep() {

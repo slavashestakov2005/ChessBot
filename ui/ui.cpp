@@ -29,7 +29,13 @@ UI::UI() {
     window.create(sf::VideoMode(600, 600), "", sf::Style::Default);
     window.setFramerateLimit(20);
 
-    position = Position();
+    try {
+        Board board;
+        board.placement(Settings::getPlacement());
+        position = Position(board);
+    } catch (std::invalid_argument &ex) {
+        position = Position();
+    }
     buff = sf::Vector2i(INT32_MAX, INT32_MAX);
     status = GameStatus::UNKNOWN;
 }
