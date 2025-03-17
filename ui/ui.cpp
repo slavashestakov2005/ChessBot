@@ -2,6 +2,7 @@
 #include <bot/bot.h>
 #include <bot/legal_moves.h>
 #include <figures/pseudo_moves.h>
+#include <settings/settings.h>
 #include <ui/storage.h>
 
 int32_t UI::BOARD_MARGIN = 20;
@@ -33,107 +34,132 @@ UI::UI() {
     status = GameStatus::UNKNOWN;
 }
 
-void UI::start() {
-    sf::Sound sound;
-    while (true) {
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                return;
-            }
-            if (event.type == sf::Event::Resized) {
-                sf::FloatRect visibleArea(0, 0, (float) window.getSize().x, (float) window.getSize().y);
-                window.setView(sf::View(visibleArea));
-            }
-            else if (event.type == sf::Event::MouseButtonPressed && getStatus() == GameStatus::WHITE_TO_MOVE) {
-                sf::Vector2i mouse = sf::Mouse::getPosition(window);
-                sf::Vector2i cell = sf::Vector2i(INT32_MAX, INT32_MAX);
-                for (int x = 0; x < 8; ++x) {
-                    for (int y = 0; y < 8; ++y) {
-                        int32_t cx = getCellPosition(x, y).x, cy = getCellPosition(x, y).y;
-                        int32_t cx2 = cx + getCellSize().x, cy2 = cy + getCellSize().y;
-                        if (mouse.x > cx && mouse.y > cy && mouse.x < cx2 && mouse.y < cy2) {
-                            cell = sf::Vector2i(x, y);
-                        }
-                    }
-                }
-                if (cell != sf::Vector2i(INT32_MAX, INT32_MAX)) {
-                    SpecialMove special;
-                    if ((float)mouse.y - getCellPosition(cell.x, cell.y).y < getCellSize().y / 2) {
-                        if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x * 0.33f) {
-                            special = SpecialMove::PAWN_KNIGHT;
-                        }
-                        else if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x * 0.67f) {
-                            special = SpecialMove::PAWN_BISHOP;
-                        } else {
-                            special = SpecialMove::PAWN_ROOK;
-                        }
-                    } else {
-                        if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x / 2) {
-                            special = SpecialMove::PAWN_QUEEN;
-                        }
-                        else {
-                            special = SpecialMove::PAWN_KING;
-                        }
-                    }
-                    if (cell == buff) {
-                        buff = sf::Vector2i(INT32_MAX, INT32_MAX);
-                        sound.setBuffer(*Storage::getSound("move"));
-                        sound.play();
-                    }
-                    else if (position.getBoard().getColorBitBoard(Color::WHITE).getBit(cell.y * 8 + cell.x) &&
-                             (!position.getBoard().getFigureBitBoard(Color::WHITE, Figure::KING).getBit(buff.y * 8 + buff.x) ||
-                              !position.getBoard().getFigureBitBoard(Color::WHITE, Figure::ROOK).getBit(cell.y * 8 + cell.x))) {
-                        buff = cell;
-                        sound.setBuffer(*Storage::getSound("move"));
-                        sound.play();
-                    }
-                    else {
-                        Moves moves = LegalMoves::generate(position, Color::WHITE);
-                        int32_t moveId = -1;
-                        for (int32_t i = 0; i < moves.size(); ++i) {
-                            Move move = moves[i];
-                            if (move.cell_from == buff.y * 8 + buff.x && move.cell_to == cell.y * 8 + cell.x && (special == moves[i].special ||
-                                (moves[i].special != SpecialMove::PAWN_KNIGHT && moves[i].special != SpecialMove::PAWN_BISHOP &&
-                                 moves[i].special != SpecialMove::PAWN_ROOK && moves[i].special != SpecialMove::PAWN_QUEEN))) {
-                                moveId = i;
-                                break;
-                            }
-                        }
-                        buff = sf::Vector2i(INT32_MAX, INT32_MAX);
-                        if (moveId != -1) {
-                            position.move(moves[moveId]);
-                            status = GameStatus::UNKNOWN;
-                            sound.setBuffer(*Storage::getSound("move"));
-                            sound.play();
-                            if (moves[moveId].figure_to != Figure::NONE || moves[moveId].special == SpecialMove::EN_PASSANT) {
-                                sound.setBuffer(*Storage::getSound("capture"));
-                                sound.play();
-                            }
-                            if (getStatus() == GameStatus::WHITE_WON || getStatus() == GameStatus::DRAW) {
-                                sound.setBuffer(*Storage::getSound("message"));
-                                sound.play();
-                            }
-                            else {
-                                update();
-                                Move move = Bot::getBestMove(position, Color::BLACK);
-                                position.move(move);
-                                status = GameStatus::UNKNOWN;
-                                sound.setBuffer(*Storage::getSound("move"));
-                                sound.play();
-                                if (move.figure_to != Figure::NONE && move.special != SpecialMove::CASTLE || move.special == SpecialMove::EN_PASSANT) {
-                                    sound.setBuffer(*Storage::getSound("capture"));
-                                    sound.play();
-                                }
-                                if (getStatus() == GameStatus::BLACK_WON || getStatus() == GameStatus::DRAW) {
-                                    sound.setBuffer(*Storage::getSound("message"));
-                                    sound.play();
-                                }
-                            }
-                        }
-                    }
-                }
+std::pair<bool, Move> UI::readUserStep(Color our, Color opponent) {
+    sf::Vector2i mouse = sf::Mouse::getPosition(window);
+    sf::Vector2i cell = sf::Vector2i(INT32_MAX, INT32_MAX);
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            int32_t cx = getCellPosition(x, y).x, cy = getCellPosition(x, y).y;
+            int32_t cx2 = cx + getCellSize().x, cy2 = cy + getCellSize().y;
+            if (mouse.x > cx && mouse.y > cy && mouse.x < cx2 && mouse.y < cy2) {
+                cell = sf::Vector2i(x, y);
             }
         }
+    }
+    if (cell == sf::Vector2i(INT32_MAX, INT32_MAX)) {   // no step
+        return {false, {}};
+    }
+    if (buff == sf::Vector2i(INT32_MAX, INT32_MAX)) {   // step from
+        buff = cell;
+        return {false, {}};
+    }
+    if (cell == buff) {                                 // from = to
+        buff = sf::Vector2i(INT32_MAX, INT32_MAX);
+        sound.setBuffer(*Storage::getSound("move"));
+        sound.play();
+        return {false, {}};
+    }
+    bool castle = position.getBoard().getFigureBitBoard(our, Figure::KING).getBit(buff.y * 8 + buff.x) &&
+                  position.getBoard().getFigureBitBoard(our, Figure::ROOK).getBit(cell.y * 8 + cell.x);
+    if (!castle && position.getBoard().getColorBitBoard(our).getBit(cell.y * 8 + cell.x)) {     // change from
+        buff = cell;
+        sound.setBuffer(*Storage::getSound("move"));
+        sound.play();
+        return {false, {}};
+    }
+
+    SpecialMove pawn_transform;
+    if ((float)mouse.y - getCellPosition(cell.x, cell.y).y < getCellSize().y / 2) {
+        if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x * 0.33f) {
+            pawn_transform = SpecialMove::PAWN_KNIGHT;
+        }
+        else if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x * 0.67f) {
+            pawn_transform = SpecialMove::PAWN_BISHOP;
+        } else {
+            pawn_transform = SpecialMove::PAWN_ROOK;
+        }
+    } else {
+        if ((float)mouse.x - getCellPosition(cell.x, cell.y).x < getCellSize().x / 2) {
+            pawn_transform = SpecialMove::PAWN_QUEEN;
+        }
+        else {
+            pawn_transform = SpecialMove::PAWN_KING;
+        }
+    }
+    
+    Moves moves = LegalMoves::generate(position, our);
+    for (int32_t i = 0; i < moves.size(); ++i) {
+        Move move = moves[i];
+        if (move.cell_from == buff.y * 8 + buff.x && move.cell_to == cell.y * 8 + cell.x && (move.special == pawn_transform ||
+            (move.special != SpecialMove::PAWN_KNIGHT && move.special != SpecialMove::PAWN_BISHOP &&
+             move.special != SpecialMove::PAWN_ROOK && move.special != SpecialMove::PAWN_QUEEN))) {
+            return {true, move};
+        }
+    }
+    return {false, {}};
+}
+
+bool UI::apply_move(Move move) {
+    status = GameStatus::UNKNOWN;
+    position.move(move);
+    update();
+    sound.setBuffer(*Storage::getSound("move"));
+    sound.play();
+    if (move.figure_to != Figure::NONE && move.special != SpecialMove::CASTLE || move.special == SpecialMove::EN_PASSANT) {
+        sound.setBuffer(*Storage::getSound("capture"));
+        sound.play();
+    }
+    if (getStatus() == GameStatus::WHITE_WON || getStatus() == GameStatus::DRAW || getStatus() == GameStatus::BLACK_WON) {
+        sound.setBuffer(*Storage::getSound("message"));
+        sound.play();
+        return false;
+    }
+    return true;
+}
+
+bool UI::ui_loop() {
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            return false;
+        }
+        if (event.type == sf::Event::Resized) {
+            sf::FloatRect visibleArea(0, 0, (float) window.getSize().x, (float) window.getSize().y);
+            window.setView(sf::View(visibleArea));
+        }
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (getStatus() == GameStatus::WHITE_TO_MOVE && Settings::getWhitePlayerType() == PlayerType::USER) {
+                auto [state, move] = readUserStep(Color::WHITE, Color::BLACK);
+                if (!state) {
+                    continue;
+                }
+                buff = sf::Vector2i(INT32_MAX, INT32_MAX);
+                apply_move(move);
+            }
+            if (getStatus() == GameStatus::BLACK_TO_MOVE && Settings::getBlckPlayerType() == PlayerType::USER) {
+                auto [state, move] = readUserStep(Color::BLACK, Color::WHITE);
+                if (!state) {
+                    continue;
+                }
+                buff = sf::Vector2i(INT32_MAX, INT32_MAX);
+                apply_move(move);
+            }
+        }
+    }
+    if (Settings::getWhitePlayerType() == PlayerType::BOT && getStatus() == GameStatus::WHITE_TO_MOVE) {
+        update();
+        Move move = Bot::getBestMove(position, Color::WHITE);
+        apply_move(move);
+    }
+    if (Settings::getBlckPlayerType() == PlayerType::BOT && getStatus() == GameStatus::BLACK_TO_MOVE) {
+        update();
+        Move move = Bot::getBestMove(position, Color::BLACK);
+        apply_move(move);
+    }
+    return true;
+}
+
+void UI::start() {
+    while (ui_loop()) {
         update();
     }
 }
@@ -245,16 +271,24 @@ void UI::updateWindowTitle() {
     GameStatus status = getStatus();
     switch (status) {
         case GameStatus::WHITE_TO_MOVE:
-            window.setTitle(L"Ваш ход");
+            if (Settings::getWhitePlayerType() == PlayerType::USER) {
+                window.setTitle(L"Ваш ход за белых");
+            } else {
+                window.setTitle(L"Бот думает за белых...");
+            }
             break;
         case GameStatus::BLACK_TO_MOVE:
-            window.setTitle(L"Бот думает...");
+            if (Settings::getBlckPlayerType() == PlayerType::USER) {
+                window.setTitle(L"Ваш ход за чёрных");
+            } else {
+                window.setTitle(L"Бот думает за чёрных...");
+            }
             break;
         case GameStatus::WHITE_WON:
-            window.setTitle(L"Вы победили");
+            window.setTitle(L"Белые победили");
             break;
         case GameStatus::BLACK_WON:
-            window.setTitle(L"Бот победил");
+            window.setTitle(L"Чёрные победили");
             break;
         case GameStatus::DRAW:
             window.setTitle(L"Ничья");

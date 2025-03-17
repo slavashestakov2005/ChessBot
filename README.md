@@ -37,3 +37,7 @@
 + [Habr - определяем веса шахматных фигур](https://habr.com/ru/articles/254753/);
 + [Habr - как компьютер играет в шахматы](https://habr.com/ru/articles/390821/);
 + [Таблица оценок позиций](https://www.chessprogramming.org/Simplified_Evaluation_Function);
+
+
+## Сборка
+Проект собирается с помощью [CMake файла](./CMakeLists.txt), под C++20. Также должна быть установлена библиотека [SFML](https://www.sfml-dev.org/), используется версия `2.5.1`, но скорее всего можно новее. Для сборки с графическим интерфейсом используйте `make bot_ui`, без него - `make bot`. Для сборки под Windows можно просто запустить `.vscode/compile_cpp.bat`.

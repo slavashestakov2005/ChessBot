@@ -32,6 +32,10 @@ set(SOURCE_FIGURES
     figures/pseudo_moves.cpp
 )
 
+set(SOURCE_SETTINGS
+    settings/settings.cpp
+)
+
 set(SOURCE_TEST
     tests/tests.cpp
 )
@@ -47,6 +51,7 @@ add_executable(bot
     ${SOURCE_BOARD}
     ${SOURCE_FIGURES}
     ${SOURCE_TEST}
+    ${SOURCE_SETTINGS}
 )
 
 add_executable(bot_ui
@@ -55,6 +60,7 @@ add_executable(bot_ui
     ${SOURCE_BOARD}
     ${SOURCE_FIGURES}
     ${SOURCE_TEST}
+    ${SOURCE_SETTINGS}
     ${SOURCE_UI}
 )
 

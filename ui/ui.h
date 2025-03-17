@@ -2,6 +2,7 @@
 #include <board/position.h>
 #include <bot/moves.h>
 #include <cstdint>
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
 enum class GameStatus {
@@ -24,8 +25,13 @@ private:
     sf::Vector2i buff;
     GameStatus status;
     Moves selected;
+    sf::Sound sound;
 
     static int32_t BOARD_MARGIN;
+
+    std::pair<bool, Move> readUserStep(Color our, Color opponent);
+    bool apply_move(Move move);
+    bool ui_loop();
 
     void update();
     void drawCells();

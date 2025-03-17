@@ -1,10 +1,7 @@
 #include <board/position.h>
+#include <settings/settings.h>
 
 uint8_t Position::EN_PASSANT_NONE = 255;
-
-char player(int step) {
-    return step % 2 == 0 ? 'w' : 'b';
-}
 
 Position::Position() : board(), en_passant(EN_PASSANT_NONE), step(0) {
     board.defaultPlacement();
@@ -90,7 +87,7 @@ uint8_t Position::getEnPassant() const {
 }
 
 Color Position::currentPlayer() const {
-    char pl = player(step);
+    char pl = Settings::player(step);
     if (pl == 'w') return Color::WHITE;
     if (pl == 'b') return Color::BLACK;
     throw std::invalid_argument("function player(step) return not w and not b");
