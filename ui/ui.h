@@ -39,6 +39,9 @@ private:
     void drawCells();
     void drawPieces();
     void drawSelectedPieceMoves();
+    void drawNextPlayers();
+    void drawText();
+    void drawText(sf::Vector2f pos, sf::Vector2f box, sf::Text text);
     void updateWindowTitle();
 
     sf::Vector2f getCellSize();

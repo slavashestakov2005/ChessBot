@@ -25,8 +25,9 @@ UI::UI() {
     Storage::addSound("move", "sounds/move.ogg");
     Storage::addSound("capture", "sounds/capture.ogg");
     Storage::addSound("message", "sounds/message.ogg");
+    Storage::addFont("font", "fonts/HSESans-Regular.otf");
 
-    window.create(sf::VideoMode(600, 600), "", sf::Style::Default);
+    window.create(sf::VideoMode(800, 600), "", sf::Style::Default);
     window.setFramerateLimit(20);
 
     try {
@@ -177,6 +178,8 @@ void UI::update() {
     drawCells();
     drawPieces();
     drawSelectedPieceMoves();
+    drawNextPlayers();
+    drawText();
     updateWindowTitle();
     window.display();
 }
@@ -275,6 +278,68 @@ void UI::drawSelectedPieceMoves() {
     }
 }
 
+void UI::drawNextPlayers() {
+    sf::Vector2f box = getCellSize();
+    sf::Vector2f pos = getCellPosition(0, 8);
+    float part = box.x * 0.25;
+    pos.y -= part;
+    {
+        sf::CircleShape cell;
+        cell.setRadius(box.x / 2);
+        cell.setPosition(pos);
+        cell.setFillColor(sf::Color(15, 165, 58));
+        window.draw(cell);
+    }
+    box.x = 2 * part;
+    box.y = 2 * part;
+    pos.x += part;
+    pos.y += part;
+    for (int32_t i = 0; i < 8; ++i) {
+        char player = Settings::player(position.getStep() + i);
+        sf::CircleShape cell;
+        cell.setRadius(box.x / 2);
+        cell.setPosition(pos);
+        if (player == 'b') {
+            cell.setFillColor(sf::Color(139, 105, 76));
+        } else {
+            cell.setFillColor(sf::Color(240, 232, 192));
+        }
+        window.draw(cell);
+        pos.x += box.x + 2 * part;
+    }
+}
+
+#include <iostream>
+
+void UI::drawText() {
+    // sf::Text text(L"СМЕШНОЙ шрифт", *Storage::getFont("font"), 20);
+    // text.setColor(sf::Color::Red
+    // text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+    // text.setPosition(0, 0);
+    sf::Vector2f box = getCellSize();
+    float width = box.x * 4;
+    float height = box.x;
+    drawText(getCellPosition(-4, 8), {width, height}, sf::Text(L"Ходы:", *Storage::getFont("font")));
+    std::vector<std::string> const& lines = recorder.getBuffer();
+    int start = lines.size() - 8;
+    if (start < 0) {
+        start = 0;
+    }
+    for (int pos = start; pos < lines.size(); ++pos) {
+        drawText(getCellPosition(-4, start - pos + 7), {width, height}, sf::Text(lines[pos], *Storage::getFont("font")));
+    }
+}
+
+void UI::drawText(sf::Vector2f pos, sf::Vector2f box, sf::Text text) {
+    sf::FloatRect bound = text.getLocalBounds();
+    float scale = std::min(box.x / bound.width, box.y / bound.width);
+    // text.setScale(scale, scale);
+    // bound = text.getLocalBounds();
+    // text.setPosition(pos.x + (box.x - bound.width) / 2, pos.y + (box.y - bound.height) / 2);
+    text.setPosition(pos);
+    window.draw(text);
+}
+
 void UI::updateWindowTitle() {
     GameStatus status = getStatus();
     switch (status) {
@@ -305,13 +370,16 @@ void UI::updateWindowTitle() {
 }
 
 sf::Vector2f UI::getCellSize() {
-    uint32_t side = (std::min(window.getSize().x, window.getSize().y) - 2 * BOARD_MARGIN) / 8;
-    return {(float)side, (float)side};
+    uint32_t width = (window.getSize().x - 2 * BOARD_MARGIN) / 12;
+    uint32_t height = (window.getSize().y - 2 * BOARD_MARGIN) / 9;
+    uint32_t side = std::min(width, height);
+    return {(float) side, (float) side};
 }
 
 sf::Vector2f UI::getCellPosition(int32_t x, int32_t y) {
-    sf::Vector2f size = getCellSize();
-    return {BOARD_MARGIN + size.x * (float)x, (float)window.getSize().y - BOARD_MARGIN - size.y * (float)(y + 1)};
+    sf::Vector2f cell = getCellSize();
+    return {window.getSize().x - cell.x * 8 - BOARD_MARGIN + cell.x * (float)(x + 1 - 1),
+            window.getSize().y - BOARD_MARGIN - cell.y * (float)(y + 1)};
 }
 
 GameStatus UI::getStatus() {

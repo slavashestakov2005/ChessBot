@@ -18,6 +18,7 @@ public:
     uint8_t getBlackGoal() const;
     bool isWhiteWon() const;
     bool isBlackWon() const;
+    int getStep() const;
 private:
     void incStep();
     void removeFigure(uint8_t cell, Figure figure, Color color);

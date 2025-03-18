@@ -107,6 +107,10 @@ bool Position::isBlackWon() const {
     return white_kings.ones() <= Settings::getBlackGoal();
 }
 
+int Position::getStep() const {
+    return step;
+}
+
 void Position::incStep() {
     Color old_player = currentPlayer();
     ++step;
