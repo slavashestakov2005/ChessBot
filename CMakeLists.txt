@@ -33,6 +33,7 @@ set(SOURCE_FIGURES
 )
 
 set(SOURCE_SETTINGS
+    settings/recorder.cpp
     settings/settings.cpp
 )
 

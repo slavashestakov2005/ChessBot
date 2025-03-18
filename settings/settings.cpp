@@ -38,6 +38,10 @@ void Settings::setBlackGoal(int goal) {
     Settings::black_goal = goal;
 }
 
+std::string Settings::getGameCycle() {
+    return Settings::steps;
+}
+
 char Settings::player(int step) {
     return Settings::steps[step % Settings::steps.size()];
 }
@@ -46,7 +50,7 @@ PlayerType Settings::getWhitePlayerType() {
     return Settings::white;
 }
 
-PlayerType Settings::getBlckPlayerType() {
+PlayerType Settings::getBlackPlayerType() {
     return Settings::black;
 }
 

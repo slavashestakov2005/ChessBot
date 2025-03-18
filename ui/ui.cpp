@@ -38,6 +38,7 @@ UI::UI() {
     }
     buff = sf::Vector2i(INT32_MAX, INT32_MAX);
     status = GameStatus::UNKNOWN;
+    recorder.settings();
 }
 
 std::pair<bool, Move> UI::readUserStep(Color our, Color opponent) {
@@ -108,6 +109,7 @@ std::pair<bool, Move> UI::readUserStep(Color our, Color opponent) {
 bool UI::apply_move(Move move) {
     status = GameStatus::UNKNOWN;
     position.move(move);
+    recorder.append(move);
     update();
     sound.setBuffer(*Storage::getSound("move"));
     sound.play();
@@ -141,7 +143,7 @@ bool UI::ui_loop() {
                 buff = sf::Vector2i(INT32_MAX, INT32_MAX);
                 apply_move(move);
             }
-            if (getStatus() == GameStatus::BLACK_TO_MOVE && Settings::getBlckPlayerType() == PlayerType::USER) {
+            if (getStatus() == GameStatus::BLACK_TO_MOVE && Settings::getBlackPlayerType() == PlayerType::USER) {
                 auto [state, move] = readUserStep(Color::BLACK, Color::WHITE);
                 if (!state) {
                     continue;
@@ -156,7 +158,7 @@ bool UI::ui_loop() {
         Move move = Bot::getBestMove(position, Color::WHITE);
         apply_move(move);
     }
-    if (Settings::getBlckPlayerType() == PlayerType::BOT && getStatus() == GameStatus::BLACK_TO_MOVE) {
+    if (Settings::getBlackPlayerType() == PlayerType::BOT && getStatus() == GameStatus::BLACK_TO_MOVE) {
         update();
         Move move = Bot::getBestMove(position, Color::BLACK);
         apply_move(move);
@@ -284,7 +286,7 @@ void UI::updateWindowTitle() {
             }
             break;
         case GameStatus::BLACK_TO_MOVE:
-            if (Settings::getBlckPlayerType() == PlayerType::USER) {
+            if (Settings::getBlackPlayerType() == PlayerType::USER) {
                 window.setTitle(L"Ваш ход за чёрных");
             } else {
                 window.setTitle(L"Бот думает за чёрных...");

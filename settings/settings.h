@@ -20,8 +20,9 @@ public:
     static void setBlackGoal(int goal);
 
     static char player(int step);
+    static std::string getGameCycle();
     static PlayerType getWhitePlayerType();
-    static PlayerType getBlckPlayerType();
+    static PlayerType getBlackPlayerType();
     static std::string getPlacement();
     static int getWhiteGoal();
     static int getBlackGoal();

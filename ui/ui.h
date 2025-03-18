@@ -1,6 +1,7 @@
 #pragma once
 #include <board/position.h>
 #include <bot/moves.h>
+#include <settings/recorder.h>
 #include <cstdint>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -26,6 +27,7 @@ private:
     GameStatus status;
     Moves selected;
     sf::Sound sound;
+    Recorder recorder;
 
     static int32_t BOARD_MARGIN;
 
