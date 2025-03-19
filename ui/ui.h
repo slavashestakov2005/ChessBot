@@ -3,8 +3,22 @@
 #include <bot/moves.h>
 #include <settings/recorder.h>
 #include <cstdint>
+#include <thread>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+
+class AsyncSearcher {
+public:
+    AsyncSearcher();
+    void find(Position const& position, Color player);
+    bool is_started() const;
+    bool is_finished() const;
+    Move getMove();
+private:
+    bool start_search, finish_search;
+    Move best_move;
+    std::thread thr;
+};
 
 enum class GameStatus {
     WHITE_TO_MOVE,
@@ -28,6 +42,7 @@ private:
     Moves selected;
     sf::Sound sound;
     Recorder recorder;
+    AsyncSearcher searcher;
 
     static int32_t BOARD_MARGIN;
 

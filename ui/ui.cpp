@@ -5,6 +5,34 @@
 #include <settings/settings.h>
 #include <ui/storage.h>
 
+AsyncSearcher::AsyncSearcher() {
+    start_search = false;
+    finish_search = false;
+}
+
+void AsyncSearcher::find(Position const& position, Color player) {
+    start_search = true;
+    thr = std::thread([position, player, this](){
+        best_move = Bot::getBestMove(position, player);
+        finish_search = true;
+    });
+}
+
+bool AsyncSearcher::is_started() const {
+    return start_search;
+}
+
+bool AsyncSearcher::is_finished() const {
+    return finish_search;
+}
+
+Move AsyncSearcher::getMove() {
+    thr.join();
+    start_search = false;
+    finish_search = false;
+    return best_move;
+}
+
 int32_t UI::BOARD_MARGIN = 20;
 
 UI::UI() {
@@ -155,14 +183,18 @@ bool UI::ui_loop() {
         }
     }
     if (Settings::getWhitePlayerType() == PlayerType::BOT && getStatus() == GameStatus::WHITE_TO_MOVE) {
-        update();
-        Move move = Bot::getBestMove(position, Color::WHITE);
-        apply_move(move);
+        if (!searcher.is_started()) {
+            searcher.find(position, Color::WHITE);
+        } else if (searcher.is_finished()) {
+            apply_move(searcher.getMove());
+        }
     }
     if (Settings::getBlackPlayerType() == PlayerType::BOT && getStatus() == GameStatus::BLACK_TO_MOVE) {
-        update();
-        Move move = Bot::getBestMove(position, Color::BLACK);
-        apply_move(move);
+        if (!searcher.is_started()) {
+            searcher.find(position, Color::BLACK);
+        } else if (searcher.is_finished()) {
+            apply_move(searcher.getMove());
+        }
     }
     return true;
 }
