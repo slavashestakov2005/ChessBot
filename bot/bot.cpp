@@ -15,16 +15,19 @@ Move Bot::getBestMove(const Position& position, Color color) {
 
 std::tuple<int32_t, bool, Move> Bot::alphaBeta(const Position& position, Color color, int32_t depthLeft) {
     if (color == Color::WHITE) {
-        return alphaBetaMax(position, -INF, INF, depthLeft);
+        return alphaBetaMax(position, -INF - 2 * DEPTH, INF + 2 * DEPTH, depthLeft);
     }
-    return alphaBetaMin(position, -INF, INF, depthLeft);
+    return alphaBetaMin(position, -INF - 2 * DEPTH, INF + 2 * DEPTH, depthLeft);
 }
 
 std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
+    if (position.isWhiteWon()) return {INF + depthLeft, true, Move()};
+    if (position.isBlackWon()) return {-INF - depthLeft, true, Move()};
     if (depthLeft == 0) {
         return {alphaBetaMinOnlyCaptures(position, alpha, beta), false, Move()};
     }
     Moves moves = LegalMoves::generate(position, Color::BLACK);
+    if (moves.size() == 0) return {0, true, Move()};
     moves = MovesSorter::sort(position.getBoard(), moves);
     Move bestMove;
     uint8_t bestMoveIndex;
@@ -33,8 +36,6 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int3
     if (tableResult < moves.size()) {
         std::swap(moves[0], moves[tableResult]);
     }
-    if (position.isWhiteWon()) return {INF - depthLeft, true, Move()};
-    if (moves.size() == 0) return {0, true, Move()};
     for (uint8_t i = 0; i < moves.size(); ++i) {
         Move move = moves[i];
         Position copy = position;
@@ -56,10 +57,13 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int3
 }
 
 std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
+    if (position.isWhiteWon()) return {INF + depthLeft, true, Move()};
+    if (position.isBlackWon()) return {-INF - depthLeft, true, Move()};
     if (depthLeft == 0) {
         return {alphaBetaMaxOnlyCaptures(position, alpha, beta), false, Move()};
     }
     Moves moves = LegalMoves::generate(position, Color::WHITE);
+    if (moves.size() == 0) return {0, true, Move()};
     moves = MovesSorter::sort(position.getBoard(), moves);
     Move bestMove;
     uint8_t bestMoveIndex;
@@ -68,8 +72,6 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int3
     if (tableResult < moves.size()) {
         std::swap(moves[0], moves[tableResult]);
     }
-    if (position.isBlackWon()) return {-INF + depthLeft, true, Move()};
-    if (moves.size() == 0) return {0, true, Move()};
     for (uint8_t i = 0; i < moves.size(); ++i) {
         Move move = moves[i];
         Position copy = position;
