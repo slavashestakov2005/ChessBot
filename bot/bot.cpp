@@ -8,16 +8,16 @@
 const int32_t INF = 1e9;
 const int DEPTH = 6;
 
-Move Bot::getBestMove(const Position& position, Color color) {
-    auto [eval, gameWasFinished, move] = alphaBeta(position, color, DEPTH);
+Move Bot::getBestMove(const Position& position) {
+    auto [eval, gameWasFinished, move] = alphaBeta(position, -INF - 2 * DEPTH, INF + 2 * DEPTH, DEPTH, 0);
     return move;
 }
 
-std::tuple<int32_t, bool, Move> Bot::alphaBeta(const Position& position, Color color, int32_t depthLeft) {
-    if (color == Color::WHITE) {
-        return alphaBetaMax(position, -INF - 2 * DEPTH, INF + 2 * DEPTH, depthLeft);
+std::tuple<int32_t, bool, Move> Bot::alphaBeta(const Position& position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
+    if (position.currentPlayer() == Color::WHITE) {
+        return alphaBetaMax(position, alpha, beta, depthLeft, depthCurrent);
     }
-    return alphaBetaMin(position, -INF - 2 * DEPTH, INF + 2 * DEPTH, depthLeft);
+    return alphaBetaMin(position, alpha, beta, depthLeft, depthCurrent);
 }
 
 std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
@@ -40,7 +40,7 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int3
         Move move = moves[i];
         Position copy = position;
         copy.move(move);
-        auto [evaluation, gameWasFinished, next_move] = alphaBetaMax(copy, alpha, beta, depthLeft - 1, depthCurrent + 1);
+        auto [evaluation, gameWasFinished, next_move] = alphaBeta(copy, alpha, beta, depthLeft - 1, depthCurrent + 1);
         if (evaluation <= alpha) {
             VisitedStates::addState(position.getHash(), depthCurrent, bestMoveIndex);
             return {alpha, gameWasFinishedOnBestMove, bestMove};
@@ -76,7 +76,7 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int3
         Move move = moves[i];
         Position copy = position;
         copy.move(move);
-        auto [evaluation, gameWasFinished, next_move] = alphaBetaMin(copy, alpha, beta, depthLeft - 1, depthCurrent + 1);
+        auto [evaluation, gameWasFinished, next_move] = alphaBeta(copy, alpha, beta, depthLeft - 1, depthCurrent + 1);
         if (evaluation >= beta) {
             VisitedStates::addState(position.getHash(), depthCurrent, bestMoveIndex);
             return {beta, gameWasFinishedOnBestMove, bestMove};
@@ -92,6 +92,13 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int3
     return {alpha, gameWasFinishedOnBestMove, bestMove};
 }
 
+int32_t Bot::alphaBetaOnlyCaptures(const Position& position, int32_t alpha, int32_t beta) {
+    if (position.currentPlayer() == Color::WHITE) {
+        return alphaBetaMaxOnlyCaptures(position, alpha, beta);
+    }
+    return alphaBetaMinOnlyCaptures(position, alpha, beta);
+}
+
 int32_t Bot::alphaBetaMinOnlyCaptures(const Position& position, int32_t alpha, int32_t beta) {
     int32_t evaluation = Analyzer::analyze(position.getBoard());
     if (evaluation <= alpha) {
@@ -105,7 +112,7 @@ int32_t Bot::alphaBetaMinOnlyCaptures(const Position& position, int32_t alpha, i
     for (Move move : moves) {
         Position copy = position;
         copy.move(move);
-        evaluation = alphaBetaMaxOnlyCaptures(copy, alpha, beta);
+        evaluation = alphaBetaOnlyCaptures(copy, alpha, beta);
         if (evaluation <= alpha) {
             return alpha;
         }
@@ -129,7 +136,7 @@ int32_t Bot::alphaBetaMaxOnlyCaptures(const Position& position, int32_t alpha, i
     for (Move move : moves) {
         Position copy = position;
         copy.move(move);
-        evaluation = alphaBetaMinOnlyCaptures(copy, alpha, beta);
+        evaluation = alphaBetaOnlyCaptures(copy, alpha, beta);
         if (evaluation >= beta) {
             return beta;
         }

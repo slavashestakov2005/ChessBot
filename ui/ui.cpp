@@ -12,8 +12,11 @@ AsyncSearcher::AsyncSearcher() {
 
 void AsyncSearcher::find(Position const& position, Color player) {
     start_search = true;
+    if (player != position.currentPlayer()) {
+        throw std::invalid_argument("Unexpected player color for async searcher");
+    }
     thr = std::thread([position, player, this](){
-        best_move = Bot::getBestMove(position, player);
+        best_move = Bot::getBestMove(position);
         finish_search = true;
     });
 }

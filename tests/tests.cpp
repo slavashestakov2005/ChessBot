@@ -77,7 +77,7 @@ void test_play_game() {
     Position pos;
     std::cout << pos;
     while (true) {
-        Move white_move = Bot::getBestMove(pos, Color::WHITE);
+        Move white_move = Bot::getBestMove(pos);
         std::cout << "Bot move:\n";
         print_move(white_move);
         pos.move(white_move);
@@ -95,12 +95,12 @@ void test_bot_bot() {
     std::cout << pos;
     char c;
     while (std::cin >> c) {
-        Move white_move = Bot::getBestMove(pos, Color::WHITE);
+        Move white_move = Bot::getBestMove(pos);
         std::cout << "White move:\n";
         // print_move(white_move);
         pos.move(white_move);
         std::cout << pos;
-        Move black_move = Bot::getBestMove(pos, Color::BLACK);
+        Move black_move = Bot::getBestMove(pos);
         std::cout << "Black move:\n";
         // print_move(black_move);
         pos.move(black_move);
