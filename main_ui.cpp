@@ -9,11 +9,21 @@ void hello() {
 void get_steps_cycle() {
     std::cout << std::endl;
     while (true) {
-        std::cout << "Input steps queue cycle (w or b without other symbols): ";
+        std::cout << "Input steps queue cycle:" << std::endl;
+        std::cout << "1) w or b without other symbols or" << std::endl;
+        std::cout << "2) p=<float> () for randomized queue with Prob(w)=p, Prob(b)=1-p): ";
         std::string steps;
         std::cin >> steps;
         try {
-            Settings::setSteps(steps);
+            if (steps.size() >= 2 && steps[0] == 'p' && steps[1] == '=') {
+                std::string prob;
+                for (int i = 2; i < steps.size(); ++i) {
+                    prob += (steps[i] == ',' ? '.' : steps[i]);
+                }
+                Settings::setProb(stod(prob));
+            } else {
+                Settings::setSteps(steps);
+            }
             return;
         } catch (const std::logic_error& ex) {
             std::cout << "Error: " << ex.what() << std::endl;
@@ -68,6 +78,10 @@ std::string get_placement_line(int line) {
 }
 
 int get_goal(std::string we, std::string opponent, int min_value, int max_value) {
+    if (min_value == max_value) {
+        std::cout << we << " won, when count of " << opponent << " kings <=: " << min_value << std::endl;
+        return min_value;
+    }
     std::cout << std::endl;
     while (true) {
         std::cout << we << " won, when count of " << opponent << " kings <=: ";
