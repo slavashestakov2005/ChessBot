@@ -1,6 +1,6 @@
 #pragma once
-#include <board/figures.h>
 #include <cstdint>
+#include <board/figures.h>
 
 class Position;
 

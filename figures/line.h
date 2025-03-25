@@ -1,6 +1,6 @@
 #pragma once
-#include <board/bitboard.h>
 #include <array>
+#include <board/bitboard.h>
 
 namespace MovesConstants {
     enum class LineDirection {

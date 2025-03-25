@@ -1,11 +1,11 @@
 #pragma once
-#include <board/position.h>
-#include <bot/moves.h>
-#include <settings/recorder.h>
 #include <cstdint>
 #include <thread>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <board/position.h>
+#include <bot/moves.h>
+#include <settings/recorder.h>
 
 class AsyncSearcher {
 public:

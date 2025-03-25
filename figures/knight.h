@@ -1,6 +1,6 @@
 #pragma once
-#include <board/bitboard.h>
 #include <array>
+#include <board/bitboard.h>
 
 namespace Moves {
     consteval std::array<BitBoard, 64> evalKnight();

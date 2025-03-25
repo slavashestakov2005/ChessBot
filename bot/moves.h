@@ -1,6 +1,6 @@
 #pragma once
-#include <board/move.h>
 #include <array>
+#include <board/move.h>
 
 class Moves {
 public:

@@ -1,7 +1,7 @@
+#include <vector>
 #include <bot/legal_moves.h>
 #include <figures/line.h>
 #include <figures/pseudo_moves.h>
-#include <vector>
 
 template <typename Func>
 void LegalMoves::generateForFigureType(Board const& board, Color color, Figure figure, Func generator, bool only_attack, Moves &moves) {

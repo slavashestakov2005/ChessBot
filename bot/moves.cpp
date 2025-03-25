@@ -1,5 +1,5 @@
-#include <bot/moves.h>
 #include <stdexcept>
+#include <bot/moves.h>
 
 Moves::Moves() : len(0) {}
 

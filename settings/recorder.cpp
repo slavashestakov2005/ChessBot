@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <settings/recorder.h>
 #include <settings/settings.h>
-#include <iostream>
 
 const char TAKING = 'x', QUIET = '-';
 

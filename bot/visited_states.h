@@ -1,6 +1,6 @@
 #pragma once
-#include <board/hash.h>
 #include <unordered_map>
+#include <board/hash.h>
 
 class VisitedStates {
 public:

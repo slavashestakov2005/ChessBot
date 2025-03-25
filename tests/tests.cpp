@@ -1,7 +1,7 @@
 #include <iostream>
 #include <board/board.h>
-#include <bot/legal_moves.h>
 #include <bot/bot.h>
+#include <bot/legal_moves.h>
 
 void test_default_placement() {
     Board board;

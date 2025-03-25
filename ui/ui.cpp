@@ -1,9 +1,9 @@
-#include <ui/ui.h>
 #include <bot/bot.h>
 #include <bot/legal_moves.h>
 #include <figures/pseudo_moves.h>
 #include <settings/settings.h>
 #include <ui/storage.h>
+#include <ui/ui.h>
 
 AsyncSearcher::AsyncSearcher() {
     start_search = false;

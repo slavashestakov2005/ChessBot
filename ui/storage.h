@@ -1,9 +1,9 @@
 #pragma once
-#include <unordered_map>
 #include <cstdint>
 #include <string>
-#include <SFML/Graphics.hpp>
+#include <unordered_map>
 #include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 
 class Storage {
 public:

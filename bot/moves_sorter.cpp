@@ -1,7 +1,7 @@
-#include <bot/moves_sorted.h>
-#include <bot/analyzer.h>
-#include <figures/pseudo_moves.h>
 #include <algorithm>
+#include <bot/analyzer.h>
+#include <bot/moves_sorted.h>
+#include <figures/pseudo_moves.h>
 
 Moves MovesSorter::sort(Board const& board, Moves moves) {
     std::sort(moves.begin(), moves.end(), [&board](Move const& l, Move const& r){
