@@ -8,4 +8,5 @@ if not exist .build_cpp (
 )
 
 make bot_ui
-start cmd /k "bot_ui & echo. & pause & exit"
+cd ..
+start cmd /k ".build_cpp\bot_ui & echo. & pause & exit"

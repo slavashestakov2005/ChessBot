@@ -39,7 +39,7 @@ Move AsyncSearcher::getMove() {
 int32_t UI::BOARD_MARGIN = 20;
 
 UI::UI() {
-    Storage::setRoot("../data");
+    Storage::setRoot("data");
     Storage::addTexture("logotype", "images/logotype.png");
     Storage::addTexture("whitePawn", "images/chessmen/white/pawn.png");
     Storage::addTexture("whiteKnight", "images/chessmen/white/knight.png");

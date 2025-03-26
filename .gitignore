@@ -1,1 +1,4 @@
 **/.build_cpp/*
+**/.build_cpp_release/*
+**/.release/*
+**/games/*
