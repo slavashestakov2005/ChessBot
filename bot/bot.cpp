@@ -14,6 +14,11 @@ Move Bot::getBestMove(const Position& position) {
 }
 
 std::tuple<int32_t, bool, Move> Bot::alphaBeta(const Position& position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
+    if (position.isWhiteWon()) return {INF + depthLeft, true, Move()};
+    if (position.isBlackWon()) return {-INF - depthLeft, true, Move()};
+    if (depthLeft == 0) {
+        return {alphaBetaOnlyCaptures(position, alpha, beta), false, Move()};
+    }
     if (position.currentPlayer() == Color::WHITE) {
         return alphaBetaMax(position, alpha, beta, depthLeft, depthCurrent);
     }
@@ -21,11 +26,6 @@ std::tuple<int32_t, bool, Move> Bot::alphaBeta(const Position& position, int32_t
 }
 
 std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
-    if (position.isWhiteWon()) return {INF + depthLeft, true, Move()};
-    if (position.isBlackWon()) return {-INF - depthLeft, true, Move()};
-    if (depthLeft == 0) {
-        return {alphaBetaMinOnlyCaptures(position, alpha, beta), false, Move()};
-    }
     Moves moves = LegalMoves::generate(position, Color::BLACK);
     if (moves.size() == 0) return {0, true, Move()};
     moves = MovesSorter::sort(position.getBoard(), moves);
@@ -57,11 +57,6 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMin(const Position &position, int3
 }
 
 std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int32_t alpha, int32_t beta, int32_t depthLeft, int32_t depthCurrent) {
-    if (position.isWhiteWon()) return {INF + depthLeft, true, Move()};
-    if (position.isBlackWon()) return {-INF - depthLeft, true, Move()};
-    if (depthLeft == 0) {
-        return {alphaBetaMaxOnlyCaptures(position, alpha, beta), false, Move()};
-    }
     Moves moves = LegalMoves::generate(position, Color::WHITE);
     if (moves.size() == 0) return {0, true, Move()};
     moves = MovesSorter::sort(position.getBoard(), moves);
@@ -93,6 +88,10 @@ std::tuple<int32_t, bool, Move> Bot::alphaBetaMax(const Position &position, int3
 }
 
 int32_t Bot::alphaBetaOnlyCaptures(const Position& position, int32_t alpha, int32_t beta) {
+    auto [b, val] = VisitedStates::getOnlyCaptures(position.getHash());
+    if (b) {
+        return val;
+    }
     if (position.currentPlayer() == Color::WHITE) {
         return alphaBetaMaxOnlyCaptures(position, alpha, beta);
     }
@@ -102,6 +101,7 @@ int32_t Bot::alphaBetaOnlyCaptures(const Position& position, int32_t alpha, int3
 int32_t Bot::alphaBetaMinOnlyCaptures(const Position& position, int32_t alpha, int32_t beta) {
     int32_t evaluation = Analyzer::analyze(position.getBoard());
     if (evaluation <= alpha) {
+        VisitedStates::addOnlyCaptures(position.getHash(), alpha);
         return alpha;
     }
     if (evaluation < beta) {
@@ -114,18 +114,21 @@ int32_t Bot::alphaBetaMinOnlyCaptures(const Position& position, int32_t alpha, i
         copy.move(move);
         evaluation = alphaBetaOnlyCaptures(copy, alpha, beta);
         if (evaluation <= alpha) {
+            VisitedStates::addOnlyCaptures(position.getHash(), alpha);
             return alpha;
         }
         if (evaluation < beta) {
             beta = evaluation;
         }
     }
+    VisitedStates::addOnlyCaptures(position.getHash(), beta);
     return beta;
 }
 
 int32_t Bot::alphaBetaMaxOnlyCaptures(const Position& position, int32_t alpha, int32_t beta) {
     int32_t evaluation = Analyzer::analyze(position.getBoard());
     if (evaluation >= beta) {
+        VisitedStates::addOnlyCaptures(position.getHash(), beta);
         return beta;
     }
     if (evaluation > alpha) {
@@ -138,11 +141,13 @@ int32_t Bot::alphaBetaMaxOnlyCaptures(const Position& position, int32_t alpha, i
         copy.move(move);
         evaluation = alphaBetaOnlyCaptures(copy, alpha, beta);
         if (evaluation >= beta) {
+            VisitedStates::addOnlyCaptures(position.getHash(), beta);
             return beta;
         }
         if (evaluation > alpha) {
             alpha = evaluation;
         }
     }
+    VisitedStates::addOnlyCaptures(position.getHash(), alpha);
     return alpha;
 }

@@ -2,6 +2,7 @@
 
 uint8_t VisitedStates::NONE = 255;
 std::unordered_map<uint64_t, std::pair<int32_t, int8_t>> VisitedStates::data = {};
+std::unordered_map<uint64_t, int32_t> VisitedStates::captures = {};
 
 void VisitedStates::addState(Hash hash, int32_t depth, uint8_t bestMove) {
     auto it = data.find(hash.getValue());
@@ -19,4 +20,16 @@ uint8_t VisitedStates::getBestMove(Hash hash) {
         return NONE;
     }
     return it->second.second;
+}
+
+void VisitedStates::addOnlyCaptures(Hash hash, int32_t evaluation) {
+    captures[hash.getValue()] = evaluation;
+}
+
+std::pair<bool, int32_t> VisitedStates::getOnlyCaptures(Hash hash) {
+    auto it = captures.find(hash.getValue());
+    if (it == captures.end()) {
+        return {false, 0};
+    }
+    return {true, it->second};
 }
