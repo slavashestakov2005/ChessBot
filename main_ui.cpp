@@ -10,8 +10,9 @@ void get_steps_cycle() {
     std::cout << std::endl;
     while (true) {
         std::cout << "Input steps queue cycle:" << std::endl;
-        std::cout << "1) w or b without other symbols or" << std::endl;
-        std::cout << "2) p=<float> () for randomized queue with Prob(w)=p, Prob(b)=1-p): ";
+        std::cout << "1) w or b without other symbols" << std::endl;
+        std::cout << "2) p=<float> () for randomized queue with Prob(w)=p, Prob(b)=1-p)" << std::endl;
+        std::cout << "3) w or b with parens, '<pre-period>(<period>): ";
         std::string steps;
         std::cin >> steps;
         try {
@@ -21,6 +22,20 @@ void get_steps_cycle() {
                     prob += (steps[i] == ',' ? '.' : steps[i]);
                 }
                 Settings::setProb(stod(prob));
+            } else if (steps.find('(') != std::string::npos && steps[steps.size() - 1] == ')') {
+                std::string preperiod, period;
+                bool paren_was = false;
+                for (char c : steps) {
+                    if (!paren_was && c == '(') {
+                        paren_was = true;
+                    } else if (!paren_was) {
+                        preperiod += c;
+                    } else {
+                        period += c;
+                    }
+                }
+                period.pop_back();
+                Settings::setPreAndPeriod(preperiod, period);
             } else {
                 Settings::setSteps(steps);
             }

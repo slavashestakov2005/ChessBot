@@ -8,6 +8,14 @@ PlayerType Settings::white = PlayerType::USER, Settings::black = PlayerType::BOT
 std::string Settings::placement = "";
 int Settings::white_goal = 0, Settings::black_goal = 0;
 
+void Settings::setPreAndPeriod(std::string preperiod, std::string period) {
+    std::string steps = preperiod;
+    while (steps.size() < 1000) {
+        steps += period;
+    }
+    setSteps(steps);
+}
+
 void Settings::setProb(double prob) {
     if (prob <= 0 || prob >= 1) {
         throw std::invalid_argument("Expected probability from (0; 1)");

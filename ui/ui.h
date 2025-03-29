@@ -10,6 +10,7 @@
 class AsyncSearcher {
 public:
     AsyncSearcher();
+    ~AsyncSearcher();
     void find(Position const& position, Color player);
     bool is_started() const;
     bool is_finished() const;

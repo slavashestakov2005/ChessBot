@@ -10,6 +10,10 @@ AsyncSearcher::AsyncSearcher() {
     finish_search = false;
 }
 
+AsyncSearcher::~AsyncSearcher() {
+    thr.detach();
+}
+
 void AsyncSearcher::find(Position const& position, Color player) {
     start_search = true;
     if (player != position.currentPlayer()) {
