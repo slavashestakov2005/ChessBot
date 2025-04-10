@@ -365,7 +365,6 @@ void UI::drawText() {
 
 void UI::drawText(sf::Vector2f pos, sf::Vector2f box, sf::Text text) {
     sf::FloatRect bound = text.getLocalBounds();
-    float scale = std::min(box.x / bound.width, box.y / bound.width);
     text.setScale(0.95, 0.95);
     text.setPosition(pos);
     window.draw(text);

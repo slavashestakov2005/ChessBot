@@ -9,6 +9,7 @@ public:
     static uint8_t getBestMove(Hash hash);
     static void addOnlyCaptures(Hash hash, int32_t evaluation);
     static std::pair<bool, int32_t> getOnlyCaptures(Hash hash);
+    static void clear();
 private:
     static std::unordered_map<uint64_t, std::pair<int32_t, int8_t>> data;
     static std::unordered_map<uint64_t, int32_t> captures;

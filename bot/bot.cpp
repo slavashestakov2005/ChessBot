@@ -9,6 +9,7 @@ const int32_t INF = 1e9;
 const int DEPTH = 6;
 
 Move Bot::getBestMove(const Position& position) {
+    VisitedStates::clear();
     auto [eval, gameWasFinished, move] = alphaBeta(position, -INF - 2 * DEPTH, INF + 2 * DEPTH, DEPTH, 0);
     return move;
 }

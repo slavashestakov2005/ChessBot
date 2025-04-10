@@ -33,3 +33,8 @@ std::pair<bool, int32_t> VisitedStates::getOnlyCaptures(Hash hash) {
     }
     return {true, it->second};
 }
+
+void VisitedStates::clear() {
+    data.clear();
+    captures.clear();
+}
