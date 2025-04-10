@@ -17,7 +17,7 @@ for cur in dirs:
             cpp_files[file.name.replace('.cpp', '.o')] = cur + '/' + file.name.rsplit('.')[0]
 
 
-with open("all_deps.txt", "r") as f:
+with open(".vscode/all_deps.txt", "r") as f:
     target = None
     clean_deps = None
     for line in f:
@@ -49,7 +49,7 @@ with open("all_deps.txt", "r") as f:
         dependencies[target] = list(clean_deps)
 
 
-with open("deps_graph.dot", "w") as f:
+with open(".vscode/deps_graph.dot", "w") as f:
     f.write("digraph Dependencies {\n")
     f.write('    node [fontname="Arial", shape=oval];\n')
     
@@ -78,4 +78,4 @@ with open("deps_graph.dot", "w") as f:
     
     f.write("}\n")
 
-print("Граф сохранён в deps_graph.dot")
+print("Граф сохранён в .vscode/deps_graph.dot")
