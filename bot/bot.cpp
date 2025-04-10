@@ -1,7 +1,7 @@
 #include <bot/analyzer.h>
 #include <bot/bot.h>
 #include <bot/legal_moves.h>
-#include <bot/moves_sorted.h>
+#include <bot/moves_sorter.h>
 #include <bot/visited_states.h>
 #include <figures/pseudo_moves.h>
 

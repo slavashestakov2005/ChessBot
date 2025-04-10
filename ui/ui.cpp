@@ -348,13 +348,7 @@ void UI::drawNextPlayers() {
     }
 }
 
-#include <iostream>
-
 void UI::drawText() {
-    // sf::Text text(L"СМЕШНОЙ шрифт", *Storage::getFont("font"), 20);
-    // text.setColor(sf::Color::Red
-    // text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-    // text.setPosition(0, 0);
     sf::Vector2f box = getCellSize();
     float width = box.x * 4;
     float height = box.x;
@@ -372,9 +366,7 @@ void UI::drawText() {
 void UI::drawText(sf::Vector2f pos, sf::Vector2f box, sf::Text text) {
     sf::FloatRect bound = text.getLocalBounds();
     float scale = std::min(box.x / bound.width, box.y / bound.width);
-    // text.setScale(scale, scale);
-    // bound = text.getLocalBounds();
-    // text.setPosition(pos.x + (box.x - bound.width) / 2, pos.y + (box.y - bound.height) / 2);
+    text.setScale(0.95, 0.95);
     text.setPosition(pos);
     window.draw(text);
 }

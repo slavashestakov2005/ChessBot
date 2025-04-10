@@ -59,3 +59,26 @@
 Для release сборки нужно запустить из корня проекта скрипт `.vscode/create_release.bat`. Если в скрипте правильно задан путь до всех dll библиотек, то результатом скрипта будет папка `.release` с исполняемым файлом, всеми необходимыми dll и файлами дизайна (шрифты, картинки, звуки). Также в папке появится архив со всеми этими файлами.
 
 Готовую сборку для Windows можно скачать из [раздела Release на Github](https://github.com/slavashestakov2005/ChessBot/releases).
+
+
+## Презентация
+В презентации используется граф зависимостей между всеми файлами проекта, его можно сгенерировать, запустив `.vscode/deps_graph.sh` из корня проекта -- он сгенерирует файл `.vscode/graph.png` с графом зависимостей.
+
+Также в презентации используется псевдокод Зобрист хеширования, в реальности это делается [подсветкой JavaScript синтаксиса](https://highlight.hohli.com/?language=javascript) для кода:
+
+```js
+function init():
+    for square from 1 to 64:
+        for side from 0 to 1:
+            for figure in FIGURES:
+                zobrist[square][side][figure] = random_bits()
+
+function zobrist(board):
+    hash = 0
+    for square from 1 to 64:
+        for side from 0 to 1:
+            for figure in FIGURES:
+                if board[square, side, figure]:
+                    hash ^= zobtist[square][side][figure]
+    return hash
+```

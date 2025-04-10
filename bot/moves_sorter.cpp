@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <bot/analyzer.h>
-#include <bot/moves_sorted.h>
+#include <bot/moves_sorter.h>
 #include <figures/pseudo_moves.h>
 
 Moves MovesSorter::sort(Board const& board, Moves moves) {
